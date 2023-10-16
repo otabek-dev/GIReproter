@@ -5,9 +5,17 @@ namespace HisoBOT.Config
 {
     public static class BotConfig
     {
-        public static void BotConfigure(this IServiceCollection services, IConfiguration configuration)
+        public static void BotConfigure(
+            this IServiceCollection services, 
+            IConfiguration configuration)
         {
-            services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(configuration["BotToken"]));
+            services.AddHttpClient("telegram_bot_client")
+                    .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
+                    {
+                        TelegramBotClientOptions options = new(configuration["BotToken"]);
+                        return new TelegramBotClient(options, httpClient);
+                    });
+
             services.AddHostedService<ConfigureWebhook>();
         }
     }

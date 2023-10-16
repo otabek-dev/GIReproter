@@ -1,31 +1,36 @@
-﻿using Microsoft.Extensions.Options;
-using Telegram.Bot.Types.Enums;
+﻿using Telegram.Bot.Types.Enums;
 using Telegram.Bot;
 
 namespace HisoBOT.Services
 {
     public class ConfigureWebhook : IHostedService
     {
-        private readonly IConfiguration _configuration;
-        private readonly ITelegramBotClient _botClient;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IConfiguration _botConfig;
 
-        public ConfigureWebhook(IConfiguration configuration, ITelegramBotClient botClient)
+        public ConfigureWebhook(
+            IServiceProvider serviceProvider,
+            IConfiguration configuration)
         {
-            _configuration = configuration;
-            _botClient = botClient;
+            _serviceProvider = serviceProvider;
+            _botConfig = configuration;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _botClient.SetWebhookAsync(
-                url: _configuration["WebhookURL"],
+            using var scope = _serviceProvider.CreateScope();
+            var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
+            await botClient.SetWebhookAsync(
+                url: _botConfig["HostAddress"],
                 allowedUpdates: Array.Empty<UpdateType>(),
                 cancellationToken: cancellationToken);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            await _botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);
+            using var scope = _serviceProvider.CreateScope();
+            var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
+            await botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);
         }
     }
 }
