@@ -1,8 +1,7 @@
-﻿using Telegram.Bot;
-using Telegram.Bot.Exceptions;
+﻿using System.Resources;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace HisoBOT.Services;
@@ -10,223 +9,180 @@ namespace HisoBOT.Services;
 public class UpdateHandlers
 {
     private readonly ITelegramBotClient _botClient;
+    private readonly UserService _userService;
+    private readonly ProjectService _projectService;
 
-    public UpdateHandlers(ITelegramBotClient botClient)
+    public UpdateHandlers(
+        ITelegramBotClient botClient, 
+        UserService userService,
+        ProjectService projectService)
     {
         _botClient = botClient;
+        _userService = userService;
+        _projectService = projectService;
     }
 
     public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
     {
         var handler = update switch
         {
-            // UpdateType.Unknown:
-            //UpdateType.ChannelPost: 
-            // UpdateType.EditedChannelPost:
-            // UpdateType.ShippingQuery:
-            // UpdateType.PreCheckoutQuery:
-            // UpdateType.Poll:
             { Message: { } message } => BotOnMessageReceived(message, cancellationToken),
-            { EditedMessage: { } message } => BotOnMessageReceived(message, cancellationToken),
-            { CallbackQuery: { } callbackQuery } => BotOnCallbackQueryReceived(callbackQuery, cancellationToken),
-            { InlineQuery: { } inlineQuery } => BotOnInlineQueryReceived(inlineQuery, cancellationToken),
-            { ChosenInlineResult: { } chosenInlineResult } => BotOnChosenInlineResultReceived(chosenInlineResult, cancellationToken),
+            { MyChatMember: { } myChatMember } => BotOnChatMember(myChatMember, cancellationToken),
             _ => UnknownUpdateHandlerAsync(update, cancellationToken)
-        } ;
+        };
 
         await handler;
     }
 
+    private async Task BotOnChatMember(ChatMemberUpdated myChatMember, CancellationToken cancellationToken)
+    {
+        if (myChatMember == null
+            || myChatMember.NewChatMember.Status is ChatMemberStatus.Left
+            || myChatMember.NewChatMember.Status is ChatMemberStatus.Kicked)
+            return;
 
+        var userIdFromAdd = myChatMember.From.Id;
+        if (_userService.IsAdmin(userIdFromAdd))
+        {
+            if (myChatMember.NewChatMember is ChatMemberAdministrator)
+            {
+                await _botClient.SendTextMessageAsync(
+                       chatId: userIdFromAdd,
+                       text: $"Меня добавили в `{myChatMember.Chat.Type}`\nНазвание: `{myChatMember.Chat.Title}`\nID: `{myChatMember.Chat.Id}`",
+                       parseMode: ParseMode.Markdown,
+                       cancellationToken: cancellationToken);
+            }
+        }
+        else
+        {
+            await _botClient.LeaveChatAsync(myChatMember.Chat.Id);
+        }
+    }
 
     private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
     {
         if (message.Text is not { } messageText)
             return;
 
-        var action = messageText.Split(' ')[0] switch
+        var action = messageText switch
         {
-            "/inline_keyboard" => SendInlineKeyboard(_botClient, message, cancellationToken),
-            "/keyboard" => SendReplyKeyboard(_botClient, message, cancellationToken),
-            "/remove" => RemoveKeyboard(_botClient, message, cancellationToken),
-            "/photo" => SendFile(_botClient, message, cancellationToken),
-            "/request" => RequestContactAndLocation(_botClient, message, cancellationToken),
-            "/inline_mode" => StartInlineQuery(_botClient, message, cancellationToken),
-            _ => Usage(_botClient, message, cancellationToken)
+            "/start" => StartCommand(message, cancellationToken),
+            "Добавить проект" => CreateNewProjectCommand(message, cancellationToken),
+            _ => ReceiveProjectNameAndChatID(message, cancellationToken),
         };
+
         Message sentMessage = await action;
 
-        // Send inline keyboard
-        // You can process responses in BotOnCallbackQueryReceived handler
-        static async Task<Message> SendInlineKeyboard(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+    }
+
+    private async Task<Message> StartCommand(Message message, CancellationToken cancellationToken)
+    {
+        string userIdText = $"Genesis hisobot вас приветсвует!\n\rВаш user id = `{message.From?.Id}`";
+        var userId = message.From.Id;
+        var chatType = message.Chat.Type;
+
+        if (chatType is ChatType.Group
+            || chatType is ChatType.Channel
+            || chatType is ChatType.Supergroup
+            || chatType is ChatType.Sender)
         {
-            await botClient.SendChatActionAsync(
-                chatId: message.Chat.Id,
-                chatAction: ChatAction.Typing,
-                cancellationToken: cancellationToken);
-
-            // Simulate longer running task
-            await Task.Delay(500, cancellationToken);
-
-            InlineKeyboardMarkup inlineKeyboard = new(
-                new[]
-                {
-                // first row
-                new []
-                {
-                    InlineKeyboardButton.WithCallbackData("1.1", "11"),
-                    InlineKeyboardButton.WithCallbackData("1.2", "12"),
-                },
-                // second row
-                new []
-                {
-                    InlineKeyboardButton.WithCallbackData("2.1", "21"),
-                    InlineKeyboardButton.WithCallbackData("2.2", "22"),
-                },
-                });
-
-            return await botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: "Choose",
-                replyMarkup: inlineKeyboard,
-                cancellationToken: cancellationToken);
+            return null;
         }
 
-        static async Task<Message> SendReplyKeyboard(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
-        {
-            ReplyKeyboardMarkup replyKeyboardMarkup = new(
-                new[]
-                {
-                    new KeyboardButton[] { "1.1", "1.2" },
-                    new KeyboardButton[] { "2.1", "2.2" },
-                })
+        var buttons = new ReplyKeyboardMarkup(
+            new[]
             {
-                ResizeKeyboard = true
-            };
-
-            return await botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: "Choose",
-                replyMarkup: replyKeyboardMarkup,
-                cancellationToken: cancellationToken);
-        }
-
-        static async Task<Message> RemoveKeyboard(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
-        {
-            return await botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: "Removing keyboard",
-                replyMarkup: new ReplyKeyboardRemove(),
-                cancellationToken: cancellationToken);
-        }
-
-        static async Task<Message> SendFile(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
-        {
-            await botClient.SendChatActionAsync(
-                message.Chat.Id,
-                ChatAction.UploadPhoto,
-                cancellationToken: cancellationToken);
-
-            const string filePath = "Files/tux.png";
-            await using FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            var fileName = filePath.Split(Path.DirectorySeparatorChar).Last();
-
-            return await botClient.SendPhotoAsync(
-                chatId: message.Chat.Id,
-                photo: new InputFileStream(fileStream, fileName),
-                caption: "Nice Picture",
-                cancellationToken: cancellationToken);
-        }
-
-        static async Task<Message> RequestContactAndLocation(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
-        {
-            ReplyKeyboardMarkup RequestReplyKeyboard = new(
                 new[]
                 {
-                KeyboardButton.WithRequestLocation("Location"),
-                KeyboardButton.WithRequestContact("Contact"),
-                });
+                    new KeyboardButton("Добавить проект"),
+                }
+            }
+        );
 
-            return await botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: "Who or Where are you?",
-                replyMarkup: RequestReplyKeyboard,
-                cancellationToken: cancellationToken);
-        }
+        buttons.ResizeKeyboard = true;
 
-        static async Task<Message> Usage(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+        if (_userService.IsAdmin(userId))
         {
-            const string usage = "Usage:\n" +
-                                    "/inline_keyboard - send inline keyboard\n" +
-                                    "/keyboard    - send custom keyboard\n" +
-                                    "/remove      - remove custom keyboard\n" +
-                                    "/photo       - send a photo\n" +
-                                    "/request     - request location or contact\n" +
-                                    "/inline_mode - send keyboard with Inline Query";
-
-            return await botClient.SendTextMessageAsync(
+            return await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: usage,
-                replyMarkup: new ReplyKeyboardRemove(),
+                text: userIdText,
+                parseMode: ParseMode.Markdown,
+                replyMarkup: buttons,
                 cancellationToken: cancellationToken);
         }
 
-        static async Task<Message> StartInlineQuery(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+        return null;
+    }
+
+    private async Task<Message> CreateNewProjectCommand(Message message, CancellationToken cancellationToken)
+    {
+        string userIdText = $"Пришлите chatId и название проекта в таком формате:\n\nchatId:название_проекта";
+        var userId = message.From.Id;
+        var chatType = message.Chat.Type;
+
+        if (chatType is ChatType.Group
+            || chatType is ChatType.Channel
+            || chatType is ChatType.Supergroup
+            || chatType is ChatType.Sender)
         {
-            InlineKeyboardMarkup inlineKeyboard = new(
-                InlineKeyboardButton.WithSwitchInlineQueryCurrentChat("Inline Mode"));
+            return null;
+        }
 
-            return await botClient.SendTextMessageAsync(
+        _userService.SetTypeProject(userId, true);
+
+        if (_userService.IsAdmin(userId))
+        {
+            return await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: "Press the button to start Inline Query",
-                replyMarkup: inlineKeyboard,
+                text: userIdText,
                 cancellationToken: cancellationToken);
         }
+
+        return null;
     }
 
-    // Process Inline Keyboard callback data
-    private async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery, CancellationToken cancellationToken)
+    private async Task<Message> ReceiveProjectNameAndChatID(Message message, CancellationToken cancellationToken)
     {
-        await _botClient.AnswerCallbackQueryAsync(
-            callbackQueryId: callbackQuery.Id,
-            text: $"Received {callbackQuery.Data}",
-            cancellationToken: cancellationToken);
+        string userIdText = $"*User id =* `{message.From?.Id}` <br/> Команда не найдена";
+        var userId = message.From.Id;
+        var chatType = message.Chat.Type;
 
-        await _botClient.SendTextMessageAsync(
-            chatId: callbackQuery.Message!.Chat.Id,
-            text: $"Received {callbackQuery.Data}",
-            cancellationToken: cancellationToken);
+        if (chatType is ChatType.Group
+            || chatType is ChatType.Channel
+            || chatType is ChatType.Supergroup
+            || chatType is ChatType.Sender)
+        {
+            return message;
+        }
+
+        if (_userService.IsAdmin(userId) && _userService.IsTypeProjectName(userId))
+        {
+            await CreateProject(message, cancellationToken);
+        }
+        return message;
     }
 
-    #region Inline Mode
-
-    private async Task BotOnInlineQueryReceived(InlineQuery inlineQuery, CancellationToken cancellationToken)
+    private async Task<Message> CreateProject(Message message, CancellationToken cancellationToken)
     {
-        InlineQueryResult[] results = {
-        // displayed result
-        new InlineQueryResultArticle(
-            id: "1",
-            title: "TgBots",
-            inputMessageContent: new InputTextMessageContent("hello"))
-    };
+        _userService.SetTypeProject(message.From.Id, false);
 
-        await _botClient.AnswerInlineQueryAsync(
-            inlineQueryId: inlineQuery.Id,
-            results: results,
-            cacheTime: 0,
-            isPersonal: true,
+        var chatIdAndProjectName = message.Text.Trim();
+        string[] parts = chatIdAndProjectName.Split(':');
+
+        if (parts.Length == 2)
+        {
+            string chatId = parts[0];
+            string projectName = parts[1];
+
+            _projectService.CreateProject(chatId, projectName);
+        }
+
+        return await _botClient.SendTextMessageAsync(
+            chatId: message.Chat.Id,
+            text: "Проект создан",
+            parseMode: ParseMode.Markdown,
             cancellationToken: cancellationToken);
     }
-
-    private async Task BotOnChosenInlineResultReceived(ChosenInlineResult chosenInlineResult, CancellationToken cancellationToken)
-    {
-        await _botClient.SendTextMessageAsync(
-            chatId: chosenInlineResult.From.Id,
-            text: $"You chose result with Id: {chosenInlineResult.ResultId}",
-            cancellationToken: cancellationToken);
-    }
-
-    #endregion
 
     private Task UnknownUpdateHandlerAsync(Update update, CancellationToken cancellationToken)
     {

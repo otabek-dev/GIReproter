@@ -1,4 +1,5 @@
-﻿using HisoBOT.Services;
+﻿using HisoBOT.DB;
+using HisoBOT.Services;
 using Telegram.Bot;
 
 namespace HisoBOT.Config
@@ -16,7 +17,11 @@ namespace HisoBOT.Config
                         return new TelegramBotClient(options, httpClient);
                     });
 
+            services.AddDbContext<AppDbContext>();
             services.AddHostedService<ConfigureWebhook>();
+            services.AddScoped<UpdateHandlers>();
+            services.AddScoped<ProjectService>();
+            services.AddScoped<UserService>();
         }
     }
 }
