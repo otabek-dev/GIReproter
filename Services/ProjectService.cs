@@ -1,4 +1,5 @@
 ﻿using HisoBOT.DB;
+using HisoBOT.Models;
 
 namespace HisoBOT.Services
 {
@@ -13,7 +14,14 @@ namespace HisoBOT.Services
 
         public void CreateProject(string chatId, string projectName)
         {
-            Console.WriteLine($"{chatId} {projectName}");
+            _context.Projects.Add(new Project()
+            {
+                Id = Guid.NewGuid(),
+                ChatId = chatId,
+                Name = projectName
+            });
+
+            _context.SaveChanges();
         }
     }
 }

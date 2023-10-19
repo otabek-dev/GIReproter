@@ -55,6 +55,10 @@ public class UpdateHandlers
         }
         else
         {
+            if (myChatMember.Chat.Type is ChatType.Private)
+            {
+                return;
+            }
             await _botClient.LeaveChatAsync(myChatMember.Chat.Id);
         }
     }
@@ -164,7 +168,6 @@ public class UpdateHandlers
 
     private async Task<Message> CreateProject(Message message, CancellationToken cancellationToken)
     {
-        _userService.SetTypeProject(message.From.Id, false);
 
         var chatIdAndProjectName = message.Text.Trim();
         string[] parts = chatIdAndProjectName.Split(':');
@@ -175,6 +178,15 @@ public class UpdateHandlers
             string projectName = parts[1];
 
             _projectService.CreateProject(chatId, projectName);
+            _userService.SetTypeProject(message.From.Id, false);
+        }
+        else
+        {
+            return await _botClient.SendTextMessageAsync(
+            chatId: message.Chat.Id,
+            text: "Не верный формат введите заново!",
+            parseMode: ParseMode.Markdown,
+            cancellationToken: cancellationToken);
         }
 
         return await _botClient.SendTextMessageAsync(
