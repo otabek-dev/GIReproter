@@ -22,6 +22,7 @@ namespace HisoBOT.Config
             services.AddScoped<UpdateHandlers>();
             services.AddScoped<ProjectService>();
             services.AddScoped<UserService>();
+            services.AddScoped<HisobotService>();
         }
     }
 }

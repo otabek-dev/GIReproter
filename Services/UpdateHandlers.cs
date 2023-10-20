@@ -168,7 +168,6 @@ public class UpdateHandlers
 
     private async Task<Message> CreateProject(Message message, CancellationToken cancellationToken)
     {
-
         var chatIdAndProjectName = message.Text.Trim();
         string[] parts = chatIdAndProjectName.Split(':');
 
