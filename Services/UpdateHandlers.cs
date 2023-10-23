@@ -132,10 +132,9 @@ public class UpdateHandlers
             return null;
         }
 
-        _userService.SetTypeProject(userId, true);
-
         if (_userService.IsAdmin(userId))
         {
+            _userService.SetIsTypeProjectName(userId, true);
             return await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 text: userIdText,
@@ -176,21 +175,29 @@ public class UpdateHandlers
             string chatId = parts[0];
             string projectName = parts[1];
 
-            _projectService.CreateProject(chatId, projectName);
-            _userService.SetTypeProject(message.From.Id, false);
+            var result = _projectService.CreateProject(chatId, projectName);
+            if (result.Success is true)
+            {
+                _userService.SetIsTypeProjectName(message.From.Id, false);
+                return await _botClient.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: result.Message,
+                    parseMode: ParseMode.Markdown,
+                    cancellationToken: cancellationToken);
+            }
+            else
+            {
+                return await _botClient.SendTextMessageAsync(
+                    chatId: message.Chat.Id,
+                    text: result.Message,
+                    parseMode: ParseMode.Markdown,
+                    cancellationToken: cancellationToken);
+            }
         }
-        else
-        {
-            return await _botClient.SendTextMessageAsync(
-            chatId: message.Chat.Id,
-            text: "Не верный формат введите заново!",
-            parseMode: ParseMode.Markdown,
-            cancellationToken: cancellationToken);
-        }
-
+        
         return await _botClient.SendTextMessageAsync(
             chatId: message.Chat.Id,
-            text: "Проект создан",
+            text: "Не верный формат введите заново!",
             parseMode: ParseMode.Markdown,
             cancellationToken: cancellationToken);
     }

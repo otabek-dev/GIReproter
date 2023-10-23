@@ -36,7 +36,7 @@ public class UserService
         return isTypeProjectName.IsTypeProjectName;
     }
 
-    public void SetTypeProject(long userId, bool isTypeProjectName)
+    public void SetIsTypeProjectName(long userId, bool isTypeProjectName)
     {
         var user = _context.Users.FirstOrDefault(u => u.Id == userId);
 

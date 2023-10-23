@@ -20,11 +20,9 @@ namespace HisoBOT.Services
                 .Where(pn => pn.Name == projectName)
                 .ToList();
 
-            long chatId;
-
             foreach (var project in projects)
             {
-                if (long.TryParse(project.ChatId, out chatId))
+                if (long.TryParse(project.ChatId, out var chatId))
                 {
                     await _botClient.SendTextMessageAsync(chatId, info);
                 }

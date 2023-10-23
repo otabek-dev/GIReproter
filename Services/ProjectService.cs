@@ -1,5 +1,6 @@
 ﻿using HisoBOT.DB;
 using HisoBOT.Models;
+using HisoBOT.Results;
 
 namespace HisoBOT.Services
 {
@@ -12,8 +13,13 @@ namespace HisoBOT.Services
             _context = context;
         }
 
-        public void CreateProject(string chatId, string projectName)
+        public Result CreateProject(string chatId, string projectName)
         {
+            if (_context.Projects.Any(x => x.ChatId == chatId))
+            {
+                return new Result(false, "Проект с таким chat id уже существует! Введите другую...");
+            }
+
             _context.Projects.Add(new Project()
             {
                 Id = Guid.NewGuid(),
@@ -22,6 +28,7 @@ namespace HisoBOT.Services
             });
 
             _context.SaveChanges();
+            return new Result(true, "Проект создан");
         }
     }
 }

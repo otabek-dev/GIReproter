@@ -1,5 +1,4 @@
 using HisoBOT.Config;
-using HisoBOT.DB;
 
 var builder = WebApplication.CreateBuilder(args);
 
