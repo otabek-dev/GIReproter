@@ -59,7 +59,7 @@ public class UpdateHandlers
             {
                 return;
             }
-            await _botClient.LeaveChatAsync(myChatMember.Chat.Id);
+            await _botClient.LeaveChatAsync(myChatMember.Chat.Id, cancellationToken);
         }
     }
 

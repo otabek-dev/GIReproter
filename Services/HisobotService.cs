@@ -1,4 +1,5 @@
 ﻿using HisoBOT.DB;
+using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -21,9 +22,9 @@ namespace HisoBOT.Services
 
         public async Task SendHisobot(string info, string projectName)
         {
-            var projects = _context.Projects
-                .Where(pn => pn.Name == projectName)
-                .ToList();
+            var projects = await _context.Projects
+                .Where(p => p.Name == projectName)
+                .ToListAsync();
 
             foreach (var project in projects)
             {
@@ -34,8 +35,7 @@ namespace HisoBOT.Services
                         ChatMember chatMember = await _botClient.GetChatMemberAsync(chatId, 6441434094);
 
                         if (chatMember.Status == ChatMemberStatus.Member 
-                            || chatMember.Status == ChatMemberStatus.Administrator 
-                            || chatMember.Status == ChatMemberStatus.Creator)
+                            || chatMember.Status == ChatMemberStatus.Administrator)
                         {
                             await _botClient.SendTextMessageAsync(chatId, info);
                         }
