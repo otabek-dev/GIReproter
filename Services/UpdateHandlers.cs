@@ -66,6 +66,9 @@ public class UpdateHandlers
     {
         if (message.Text is not { } messageText)
             return;
+        
+        if (message.Chat.Type is not ChatType.Private)
+            return;
 
         var action = messageText switch
         {
@@ -76,22 +79,12 @@ public class UpdateHandlers
         };
 
         Message sentMessage = await action;
-
     }
 
     private async Task<Message> StartCommand(Message message, CancellationToken cancellationToken)
     {
         string userIdText = $"Genesis hisobot вас приветсвует!\n\rВаш user id = `{message.From?.Id}`";
         var userId = message.From.Id;
-        var chatType = message.Chat.Type;
-
-        if (chatType is ChatType.Group
-            || chatType is ChatType.Channel
-            || chatType is ChatType.Supergroup
-            || chatType is ChatType.Sender)
-        {
-            return null;
-        }
 
         var buttons = new ReplyKeyboardMarkup(
             new[]
@@ -99,12 +92,16 @@ public class UpdateHandlers
                 new[]
                 {
                     new KeyboardButton("Добавить проект"),
+                    new KeyboardButton("Удалить проект")
+                },
+                new[]
+                {
                     new KeyboardButton("Мои проекты")
                 }
-            }
-        );
-
-        buttons.ResizeKeyboard = true;
+            })
+        { 
+            ResizeKeyboard = true 
+        };
 
         if (_userService.IsAdmin(userId))
         {
@@ -122,15 +119,6 @@ public class UpdateHandlers
     private async Task<Message> MyProjectsCommand(Message message, CancellationToken cancellationToken)
     {
         var userId = message.From.Id;
-        var chatType = message.Chat.Type;
-
-        if (chatType is ChatType.Group
-            || chatType is ChatType.Channel
-            || chatType is ChatType.Supergroup
-            || chatType is ChatType.Sender)
-        {
-            return null;
-        }
 
         var projects = _projectService.GetAllProjects();
 
@@ -156,15 +144,6 @@ public class UpdateHandlers
     {
         string userIdText = $"Пришлите chatId и название проекта в таком формате:\n\nchatId:название_проекта";
         var userId = message.From.Id;
-        var chatType = message.Chat.Type;
-
-        if (chatType is ChatType.Group
-            || chatType is ChatType.Channel
-            || chatType is ChatType.Supergroup
-            || chatType is ChatType.Sender)
-        {
-            return null;
-        }
 
         if (_userService.IsAdmin(userId))
         {
@@ -182,15 +161,6 @@ public class UpdateHandlers
     {
         string userIdText = $"*User id =* `{message.From?.Id}` <br/> Команда не найдена";
         var userId = message.From.Id;
-        var chatType = message.Chat.Type;
-
-        if (chatType is ChatType.Group
-            || chatType is ChatType.Channel
-            || chatType is ChatType.Supergroup
-            || chatType is ChatType.Sender)
-        {
-            return message;
-        }
 
         if (_userService.IsAdmin(userId) && _userService.IsTypeProjectName(userId))
         {

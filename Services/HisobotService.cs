@@ -51,7 +51,6 @@ namespace HisoBOT.Services
                             Console.WriteLine("Произошла ошибка: " + ex.Message);
                         }
                     }
-
                 }
             }
         }
