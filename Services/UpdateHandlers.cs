@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using HisoBOT.Models;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -35,7 +36,7 @@ public class UpdateHandlers
 
     private async Task BotOnChatMember(ChatMemberUpdated myChatMember, CancellationToken cancellationToken)
     {
-        if (myChatMember == null
+        if (myChatMember is null
             || myChatMember.NewChatMember.Status is ChatMemberStatus.Left
             || myChatMember.NewChatMember.Status is ChatMemberStatus.Kicked)
             return;
@@ -70,6 +71,12 @@ public class UpdateHandlers
         if (message.Chat.Type is not ChatType.Private)
             return;
 
+        if (message.From is null)
+            return;
+
+        if (!_userService.IsAdmin(message.From.Id))
+            return;
+
         var action = messageText switch
         {
             "/start" => StartCommand(message, cancellationToken),
@@ -84,7 +91,7 @@ public class UpdateHandlers
     private async Task<Message> StartCommand(Message message, CancellationToken cancellationToken)
     {
         string userIdText = $"Genesis hisobot вас приветсвует!\n\rВаш user id = `{message.From?.Id}`";
-        var userId = message.From.Id;
+        await _userService.SetIsTypeProjectName(message.From.Id, false);
 
         var buttons = new ReplyKeyboardMarkup(
             new[]
@@ -98,28 +105,20 @@ public class UpdateHandlers
                 {
                     new KeyboardButton("Мои проекты")
                 }
-            })
-        { 
-            ResizeKeyboard = true 
-        };
+            });
+        
+        buttons.ResizeKeyboard = true;
 
-        if (_userService.IsAdmin(userId))
-        {
-            return await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: userIdText,
-                parseMode: ParseMode.Markdown,
-                replyMarkup: buttons,
-                cancellationToken: cancellationToken);
-        }
-
-        return null;
+        return await _botClient.SendTextMessageAsync(
+            chatId: message.Chat.Id,
+            text: userIdText,
+            parseMode: ParseMode.Markdown,
+            replyMarkup: buttons,
+            cancellationToken: cancellationToken);
     }
 
     private async Task<Message> MyProjectsCommand(Message message, CancellationToken cancellationToken)
     {
-        var userId = message.From.Id;
-
         var projects = _projectService.GetAllProjects();
 
         if (projects.Any())
@@ -143,30 +142,30 @@ public class UpdateHandlers
     private async Task<Message> CreateNewProjectCommand(Message message, CancellationToken cancellationToken)
     {
         string userIdText = $"Пришлите chatId и название проекта в таком формате:\n\nchatId:название_проекта";
-        var userId = message.From.Id;
-
-        if (_userService.IsAdmin(userId))
-        {
-            _userService.SetIsTypeProjectName(userId, true);
-            return await _botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: userIdText,
-                cancellationToken: cancellationToken);
-        }
-
-        return null;
+        
+        await _userService.SetIsTypeProjectName(message.From.Id, true);
+        
+        return await _botClient.SendTextMessageAsync(
+            chatId: message.Chat.Id,
+            text: userIdText,
+            cancellationToken: cancellationToken);
     }
 
     private async Task<Message> ReceiveProjectNameAndChatID(Message message, CancellationToken cancellationToken)
     {
-        string userIdText = $"*User id =* `{message.From?.Id}` <br/> Команда не найдена";
+        string userIdText = $"*User id =* `{message.From?.Id}` \n\rКоманда не найдена";
         var userId = message.From.Id;
 
-        if (_userService.IsAdmin(userId) && _userService.IsTypeProjectName(userId))
+        if (_userService.IsTypeProjectName(userId))
         {
-            await CreateProject(message, cancellationToken);
+            return await CreateProject(message, cancellationToken);
         }
-        return message;
+
+        return await _botClient.SendTextMessageAsync(
+                 chatId: message.Chat.Id,
+                 text: userIdText,
+                 parseMode: ParseMode.Markdown,
+                 cancellationToken: cancellationToken);
     }
 
     private async Task<Message> CreateProject(Message message, CancellationToken cancellationToken)
@@ -182,7 +181,7 @@ public class UpdateHandlers
             var result = _projectService.CreateProject(chatId, projectName);
             if (result.Success is true)
             {
-                _userService.SetIsTypeProjectName(message.From.Id, false);
+                await _userService.SetIsTypeProjectName(message.From.Id, false);
                 return await _botClient.SendTextMessageAsync(
                     chatId: message.Chat.Id,
                     text: result.Message,
@@ -201,7 +200,7 @@ public class UpdateHandlers
 
         return await _botClient.SendTextMessageAsync(
             chatId: message.Chat.Id,
-            text: "Не верный формат введите заново!",
+            text: "Не верный формат для создания проекта. Введите заново!",
             parseMode: ParseMode.Markdown,
             cancellationToken: cancellationToken);
     }

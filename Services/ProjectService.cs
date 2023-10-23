@@ -22,9 +22,10 @@ namespace HisoBOT.Services
         public Result CreateProject(string chatId, string projectName)
         {
             if (_context.Projects.Any(x => x.ChatId == chatId))
-            {
                 return new Result(false, "Проект с таким chat id уже существует! Введите другую...");
-            }
+
+            if (chatId.Length < 3 || projectName.Length < 3)
+                return new Result(false, "Меньше 3 символов в форматах не допускается!");
 
             _context.Projects.Add(new Project()
             {
