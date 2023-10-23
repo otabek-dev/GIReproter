@@ -1,6 +1,7 @@
 ﻿using HisoBOT.DB;
 using HisoBOT.Models;
 using HisoBOT.Results;
+using Microsoft.EntityFrameworkCore;
 
 namespace HisoBOT.Services
 {
@@ -11,6 +12,11 @@ namespace HisoBOT.Services
         public ProjectService(AppDbContext context) 
         {
             _context = context;
+        }
+
+        public List<Project> GetAllProjects()
+        {
+            return _context.Projects.ToList();
         }
 
         public Result CreateProject(string chatId, string projectName)
@@ -29,6 +35,11 @@ namespace HisoBOT.Services
 
             _context.SaveChanges();
             return new Result(true, "Проект создан");
+        }
+
+        public void DeleteProject(string chatId)
+        {
+            _context.Projects.Where(p => p.ChatId == chatId).ExecuteDelete();
         }
     }
 }

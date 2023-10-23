@@ -1,5 +1,8 @@
 ﻿using HisoBOT.DB;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace HisoBOT.Services
 {
@@ -7,11 +10,13 @@ namespace HisoBOT.Services
     {
         private readonly ITelegramBotClient _botClient;
         private readonly AppDbContext _context;
+        private readonly ProjectService _projectService;
 
-        public HisobotService(ITelegramBotClient botClient, AppDbContext context)
+        public HisobotService(ITelegramBotClient botClient, AppDbContext context, ProjectService projectService)
         {
             _botClient = botClient;
             _context = context;
+            _projectService = projectService;
         }
 
         public async Task SendHisobot(string info, string projectName)
@@ -24,7 +29,29 @@ namespace HisoBOT.Services
             {
                 if (long.TryParse(project.ChatId, out var chatId))
                 {
-                    await _botClient.SendTextMessageAsync(chatId, info);
+                    try
+                    {
+                        ChatMember chatMember = await _botClient.GetChatMemberAsync(chatId, 6441434094);
+
+                        if (chatMember.Status == ChatMemberStatus.Member 
+                            || chatMember.Status == ChatMemberStatus.Administrator 
+                            || chatMember.Status == ChatMemberStatus.Creator)
+                        {
+                            await _botClient.SendTextMessageAsync(chatId, info);
+                        }
+                    }
+                    catch (ApiRequestException ex)
+                    {
+                        if (ex.ErrorCode == 403)
+                        {
+                            _projectService.DeleteProject(chatId.ToString());
+                        }
+                        else
+                        {
+                            Console.WriteLine("Произошла ошибка: " + ex.Message);
+                        }
+                    }
+
                 }
             }
         }

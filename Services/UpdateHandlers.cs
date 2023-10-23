@@ -1,5 +1,4 @@
-﻿using System.Resources;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -13,7 +12,7 @@ public class UpdateHandlers
     private readonly ProjectService _projectService;
 
     public UpdateHandlers(
-        ITelegramBotClient botClient, 
+        ITelegramBotClient botClient,
         UserService userService,
         ProjectService projectService)
     {
@@ -72,6 +71,7 @@ public class UpdateHandlers
         {
             "/start" => StartCommand(message, cancellationToken),
             "Добавить проект" => CreateNewProjectCommand(message, cancellationToken),
+            "Мои проекты" => MyProjectsCommand(message, cancellationToken),
             _ => ReceiveProjectNameAndChatID(message, cancellationToken),
         };
 
@@ -99,6 +99,7 @@ public class UpdateHandlers
                 new[]
                 {
                     new KeyboardButton("Добавить проект"),
+                    new KeyboardButton("Мои проекты")
                 }
             }
         );
@@ -116,6 +117,39 @@ public class UpdateHandlers
         }
 
         return null;
+    }
+
+    private async Task<Message> MyProjectsCommand(Message message, CancellationToken cancellationToken)
+    {
+        var userId = message.From.Id;
+        var chatType = message.Chat.Type;
+
+        if (chatType is ChatType.Group
+            || chatType is ChatType.Channel
+            || chatType is ChatType.Supergroup
+            || chatType is ChatType.Sender)
+        {
+            return null;
+        }
+
+        var projects = _projectService.GetAllProjects();
+
+        if (projects.Any())
+        {
+            var projectStrings = projects.Select(p => $"{p.ChatId}:{p.Name}");
+            string projectsAsString = string.Join(Environment.NewLine, projectStrings);
+
+            return await _botClient.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: "Ваши проекты: ```\n\r" + projectsAsString + "```",
+                        parseMode: ParseMode.Markdown,
+                        cancellationToken: cancellationToken);
+        }
+
+        return await _botClient.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: "Проектов не найдено!",
+                        cancellationToken: cancellationToken);
     }
 
     private async Task<Message> CreateNewProjectCommand(Message message, CancellationToken cancellationToken)
@@ -194,7 +228,7 @@ public class UpdateHandlers
                     cancellationToken: cancellationToken);
             }
         }
-        
+
         return await _botClient.SendTextMessageAsync(
             chatId: message.Chat.Id,
             text: "Не верный формат введите заново!",
