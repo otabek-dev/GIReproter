@@ -5,7 +5,7 @@ using Telegram.Bot;
 
 namespace HisoBOT.Config;
 
-public static class BotConfig
+public static class AppConfig
 {
     public static void BotConfigure(this IServiceCollection services, IConfiguration configuration)
     {
@@ -21,6 +21,7 @@ public static class BotConfig
         services.AddScoped<HisobotService>();
         services.AddScoped<ProjectService>();
         services.AddScoped<UpdateHandlers>();
+        services.AddScoped<CommandService>();
         services.AddDbContext<AppDbContext>();
         services.AddHostedService<ConfigureWebhook>();
     }

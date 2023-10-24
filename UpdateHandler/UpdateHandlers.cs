@@ -11,20 +11,25 @@ public class UpdateHandlers
     private readonly ITelegramBotClient _botClient;
     private readonly UserService _userService;
     private readonly ProjectService _projectService;
+    private readonly CommandService _commandService;
 
     public UpdateHandlers(
-        ITelegramBotClient botClient, UserService userService, ProjectService projectService)
+        ITelegramBotClient botClient, 
+        UserService userService, 
+        ProjectService projectService, 
+        CommandService commandService)
     {
         _botClient = botClient;
         _userService = userService;
         _projectService = projectService;
+        _commandService = commandService;
     }
 
     public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
     {
         var handler = update switch
         {
-            { Message: { } message } => BotOnMessageReceived(message, cancellationToken),
+            { Message: { } message } => BotOnMessageReceived(update, cancellationToken),
             { MyChatMember: { } myChatMember } => BotOnChatMember(myChatMember, cancellationToken),
             _ => UnknownUpdateHandlerAsync(update, cancellationToken)
         };
@@ -61,9 +66,10 @@ public class UpdateHandlers
         }
     }
 
-    private async Task BotOnMessageReceived(Message message, CancellationToken cancellationToken)
+    private async Task BotOnMessageReceived(Update update, CancellationToken cancellationToken)
     {
-        if (message.Text is not { } messageText)
+        var message = update.Message;
+        if (message?.Text is not { } messageText)
             return;
 
         if (message.Chat.Type is not ChatType.Private)
@@ -75,15 +81,20 @@ public class UpdateHandlers
         if (!_userService.IsAdmin(message.From.Id))
             return;
 
-        var action = messageText switch
-        {
-            "/start" => StartCommand(message, cancellationToken),
-            "Добавить проект" => CreateNewProjectCommand(message, cancellationToken),
-            "Мои проекты" => MyProjectsCommand(message, cancellationToken),
-            _ => ReceiveProjectNameAndChatID(message, cancellationToken),
-        };
+        //var action = messageText switch
+        //{
+        //    "/start" => StartCommand(message, cancellationToken),
+        //    "Добавить проект" => CreateNewProjectCommand(message, cancellationToken),
+        //    "Мои проекты" => MyProjectsCommand(message, cancellationToken),
+        //    _ => ReceiveProjectNameAndChatID(message, cancellationToken),
+        //};
 
-        Message sentMessage = await action;
+        //Message sentMessage = await action;
+
+        if(_commandService.MyCommands.TryGetValue(message.Text, out var command))
+        {
+            await command.Execute(update);
+        }
     }
 
     private async Task<Message> StartCommand(Message message, CancellationToken cancellationToken)
