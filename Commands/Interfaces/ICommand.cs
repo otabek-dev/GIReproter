@@ -6,6 +6,6 @@ namespace HisoBOT.Commands.Interfaces
     public interface ICommand
     {
         public string Name { get; }
-        public Task Execute(Update update);
+        public async Task Execute(Update update) { }
     }
 }

@@ -8,7 +8,10 @@ namespace HisoBOT.Services
     {
         public Dictionary<string, ICommand> MyCommands { get; init; }
 
-        public CommandService(ITelegramBotClient botClient, UserService userService, ProjectService projectService)
+        public CommandService(
+            ITelegramBotClient botClient, 
+            UserService userService, 
+            ProjectService projectService)
         {
             MyCommands = new Dictionary<string, ICommand>
             {
