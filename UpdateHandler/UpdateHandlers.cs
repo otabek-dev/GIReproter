@@ -1,10 +1,10 @@
-﻿using HisoBOT.Models;
+﻿using HisoBOT.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace HisoBOT.Services;
+namespace HisoBOT.UpdateHandler;
 
 public class UpdateHandlers
 {
@@ -13,9 +13,7 @@ public class UpdateHandlers
     private readonly ProjectService _projectService;
 
     public UpdateHandlers(
-        ITelegramBotClient botClient,
-        UserService userService,
-        ProjectService projectService)
+        ITelegramBotClient botClient, UserService userService, ProjectService projectService)
     {
         _botClient = botClient;
         _userService = userService;
@@ -67,7 +65,7 @@ public class UpdateHandlers
     {
         if (message.Text is not { } messageText)
             return;
-        
+
         if (message.Chat.Type is not ChatType.Private)
             return;
 
@@ -106,7 +104,7 @@ public class UpdateHandlers
                     new KeyboardButton("Мои проекты")
                 }
             });
-        
+
         buttons.ResizeKeyboard = true;
 
         return await _botClient.SendTextMessageAsync(
@@ -142,9 +140,9 @@ public class UpdateHandlers
     private async Task<Message> CreateNewProjectCommand(Message message, CancellationToken cancellationToken)
     {
         string userIdText = $"Пришлите chatId и название проекта в таком формате:\n\nchatId:название_проекта";
-        
+
         await _userService.SetIsTypeProjectName(message.From.Id, true);
-        
+
         return await _botClient.SendTextMessageAsync(
             chatId: message.Chat.Id,
             text: userIdText,

@@ -1,7 +1,7 @@
 ﻿using Telegram.Bot.Types.Enums;
 using Telegram.Bot;
 
-namespace HisoBOT.Services
+namespace HisoBOT.Config
 {
     public class ConfigureWebhook : IHostedService
     {

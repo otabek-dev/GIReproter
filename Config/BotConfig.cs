@@ -1,5 +1,6 @@
 ﻿using HisoBOT.DB;
 using HisoBOT.Services;
+using HisoBOT.UpdateHandler;
 using Telegram.Bot;
 
 namespace HisoBOT.Config;
