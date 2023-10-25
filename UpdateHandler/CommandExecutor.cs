@@ -10,7 +10,7 @@ namespace HisoBOT.UpdateHandler
     public class CommandExecutor : ITelegramUpdateListener
     {
         private Dictionary<string, ICommand> MyCommands { get; init; }
-        private Dictionary<UserState, ICommand> States { get; init; }
+        private Dictionary<State, ICommand> States { get; init; }
         
         private readonly UserService _userService;
 
@@ -20,7 +20,7 @@ namespace HisoBOT.UpdateHandler
             ProjectService projectService)
         {
             _userService = userService;
-            States = new Dictionary<UserState, ICommand>();
+            States = new Dictionary<State, ICommand>();
             MyCommands = new Dictionary<string, ICommand>
             {
                 { "/start", new StartCommand(botClient, userService) },
@@ -30,7 +30,7 @@ namespace HisoBOT.UpdateHandler
 
             foreach (var command in MyCommands)
             {
-                if (command.Value.State != UserState.All)
+                if (command.Value.State != State.All)
                     States.Add(command.Value.State, command.Value);
             }
         }
@@ -42,7 +42,7 @@ namespace HisoBOT.UpdateHandler
 
             if (MyCommands.TryGetValue(update.Message.Text, out var command))
             {
-                if (command.State == UserState.Start)
+                if (command.State == State.Start)
                 {
                     await command.Execute(update);
                     return;

@@ -21,13 +21,13 @@ namespace HisoBOT.Commands
 
         public string Name => "/start";
 
-        public UserState State => UserState.Start;
+        public State State => State.Start;
 
         public async Task Execute(Update update)
         {
             var message = update.Message;
             string userIdText = $"Genesis hisobot вас приветсвует!\n\rВаш user id = `{message.From?.Id}`";
-            await _userService.SetUserState(message.From.Id, UserState.All);
+            await _userService.SetUserState(message.From.Id, State.All);
 
             var buttons = new ReplyKeyboardMarkup(
                 new[]

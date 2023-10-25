@@ -24,14 +24,14 @@ namespace HisoBOT.Commands
 
         public string Name => "/createNewProject";
 
-        public UserState State => UserState.CreateProject;
+        public State State => State.CreateProject;
 
         public async Task Execute(Update update)
         {
             var message = update.Message;
             string userIdText = $"Пришлите chatId и название проекта в таком формате:\n\nchatId:название_проекта";
 
-            await _userService.SetUserState(message.From.Id, UserState.CreateProject);
+            await _userService.SetUserState(message.From.Id, State.CreateProject);
 
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
@@ -44,7 +44,7 @@ namespace HisoBOT.Commands
             string userIdText = $"*User id =* `{message.From?.Id}` \n\rКоманда не найдена";
             var userId = message.From.Id;
 
-            if (_userService.GetUserState(userId) == UserState.CreateProject)
+            if (_userService.GetUserState(userId) == State.CreateProject)
             {
                 await CreateProject(message);
                 return;
@@ -69,7 +69,7 @@ namespace HisoBOT.Commands
                 var result = _projectService.CreateProject(chatId, projectName);
                 if (result.Success is true)
                 {
-                    await _userService.SetUserState(message.From.Id, UserState.All);
+                    await _userService.SetUserState(message.From.Id, State.All);
                     return await _botClient.SendTextMessageAsync(
                         chatId: message.Chat.Id,
                         text: result.Message,

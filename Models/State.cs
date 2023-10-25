@@ -1,6 +1,6 @@
 ﻿namespace HisoBOT.Models
 {
-    public enum UserState
+    public enum State
     {
         All,
         Start,

@@ -20,7 +20,7 @@ namespace HisoBOT.Commands
 
         public string Name => "/myProjects";
 
-        public UserState State => UserState.All;
+        public State State => State.All;
 
         public async Task Execute(Update update)
         {

@@ -3,6 +3,6 @@
     public class User
     {
         public long Id { get; set; }
-        public UserState UserState { get; set; } = UserState.All;
+        public State UserState { get; set; } = State.All;
     }
 }

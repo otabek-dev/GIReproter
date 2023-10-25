@@ -19,18 +19,18 @@ public class UserService
         return isAdmin;
     }
 
-    public UserState GetUserState(long userId)
+    public State GetUserState(long userId)
     {
         var user = _context.Users
             .FirstOrDefault(u => u.Id == userId);
        
         if (user is null)
-            return UserState.All;
+            return State.All;
 
         return user.UserState;
     }
 
-    public async Task SetUserState(long userId, UserState userState)
+    public async Task SetUserState(long userId, State userState)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
