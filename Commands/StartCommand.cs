@@ -1,4 +1,5 @@
 ﻿using HisoBOT.Commands.Interfaces;
+using HisoBOT.Models;
 using HisoBOT.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -20,11 +21,13 @@ namespace HisoBOT.Commands
 
         public string Name => "/start";
 
+        public UserState State => UserState.Start;
+
         public async Task Execute(Update update)
         {
             var message = update.Message;
             string userIdText = $"Genesis hisobot вас приветсвует!\n\rВаш user id = `{message.From?.Id}`";
-            await _userService.SetUserState(message.From.Id, Models.UserState.None);
+            await _userService.SetUserState(message.From.Id, UserState.All);
 
             var buttons = new ReplyKeyboardMarkup(
                 new[]

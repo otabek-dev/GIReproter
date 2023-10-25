@@ -7,7 +7,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace HisoBOT.Commands
 {
-    public class CreateNewProjectCommand : ICommand, IListener
+    public class CreateNewProjectCommand : ICommand
     {
         private readonly UserService _userService;
         private readonly ITelegramBotClient _botClient;
@@ -23,6 +23,8 @@ namespace HisoBOT.Commands
         }
 
         public string Name => "/createNewProject";
+
+        public UserState State => UserState.CreateProject;
 
         public async Task Execute(Update update)
         {
@@ -67,7 +69,7 @@ namespace HisoBOT.Commands
                 var result = _projectService.CreateProject(chatId, projectName);
                 if (result.Success is true)
                 {
-                    await _userService.SetUserState(message.From.Id, UserState.None);
+                    await _userService.SetUserState(message.From.Id, UserState.All);
                     return await _botClient.SendTextMessageAsync(
                         chatId: message.Chat.Id,
                         text: result.Message,

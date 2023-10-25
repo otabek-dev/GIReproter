@@ -1,4 +1,5 @@
 ﻿using HisoBOT.Commands.Interfaces;
+using HisoBOT.Models;
 using HisoBOT.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -18,6 +19,8 @@ namespace HisoBOT.Commands
         }
 
         public string Name => "/myProjects";
+
+        public UserState State => UserState.All;
 
         public async Task Execute(Update update)
         {

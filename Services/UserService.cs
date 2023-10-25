@@ -25,7 +25,7 @@ public class UserService
             .FirstOrDefault(u => u.Id == userId);
        
         if (user is null)
-            return UserState.None;
+            return UserState.All;
 
         return user.UserState;
     }

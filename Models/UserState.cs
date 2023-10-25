@@ -2,7 +2,8 @@
 {
     public enum UserState
     {
-        None,
+        All,
+        Start,
         CreateProject,
         DeleteProject
     }
