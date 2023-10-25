@@ -48,5 +48,10 @@ namespace HisoBOT.Commands
                 parseMode: ParseMode.Markdown,
                 replyMarkup: buttons);
         }
+
+        public Task GetUpdate(Update update)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

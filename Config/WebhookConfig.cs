@@ -3,12 +3,12 @@ using Telegram.Bot;
 
 namespace HisoBOT.Config
 {
-    public class ConfigureWebhook : IHostedService
+    public class WebhookConfig : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _botConfig;
 
-        public ConfigureWebhook(
+        public WebhookConfig(
             IServiceProvider serviceProvider,
             IConfiguration configuration)
         {

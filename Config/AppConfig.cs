@@ -23,7 +23,7 @@ public static class AppConfig
         services.AddScoped<UpdateHandlers>();
         services.AddScoped<CommandExecutor>();
         services.AddDbContext<AppDbContext>();
-        services.AddHostedService<ConfigureWebhook>();
+        services.AddHostedService<WebhookConfig>();
     }
 }
 

@@ -39,5 +39,10 @@ namespace HisoBOT.Commands
                        text: "Ваши проекты: ```\n\r" + projectsAsString + "```",
                        parseMode: ParseMode.Markdown);
         }
+
+        public Task GetUpdate(Update update)
+        {
+            return Task.CompletedTask;
+        }
     }
 }
