@@ -1,6 +1,5 @@
 ﻿using HisoBOT.Commands.Interfaces;
 using HisoBOT.Services;
-using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -24,7 +23,7 @@ namespace HisoBOT.Commands
             var message = update.Message;
             string userIdText = $"Пришлите chatId и название проекта в таком формате:\n\nchatId:название_проекта";
 
-            await _userService.SetIsTypeProjectName(message.From.Id, true);
+            await _userService.SetUserState(message.From.Id, Models.UserState.CreateProject);
 
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
@@ -33,7 +32,7 @@ namespace HisoBOT.Commands
 
         public async Task GetUpdate(Update update)
         {
-            
+
         }
     }
 }

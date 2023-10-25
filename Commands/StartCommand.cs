@@ -24,7 +24,7 @@ namespace HisoBOT.Commands
         {
             var message = update.Message;
             string userIdText = $"Genesis hisobot вас приветсвует!\n\rВаш user id = `{message.From?.Id}`";
-            await _userService.SetIsTypeProjectName(message.From.Id, false);
+            await _userService.SetUserState(message.From.Id, Models.UserState.None);
 
             var buttons = new ReplyKeyboardMarkup(
                 new[]

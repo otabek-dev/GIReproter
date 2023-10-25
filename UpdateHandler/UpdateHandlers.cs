@@ -11,18 +11,18 @@ public class UpdateHandlers
     private readonly ITelegramBotClient _botClient;
     private readonly UserService _userService;
     private readonly ProjectService _projectService;
-    private readonly CommandService _commandService;
+    private readonly CommandExecutor _commandExecutor;
 
     public UpdateHandlers(
         ITelegramBotClient botClient, 
         UserService userService, 
-        ProjectService projectService, 
-        CommandService commandService)
+        ProjectService projectService,
+        CommandExecutor commandExecutor)
     {
         _botClient = botClient;
         _userService = userService;
         _projectService = projectService;
-        _commandService = commandService;
+        _commandExecutor = commandExecutor;
     }
 
     public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
@@ -81,6 +81,8 @@ public class UpdateHandlers
         if (!_userService.IsAdmin(message.From.Id))
             return;
 
+        await _commandExecutor.GetUpdate(update);
+
         //var action = messageText switch
         //{
         //    "/start" => StartCommand(message, cancellationToken),
@@ -90,17 +92,12 @@ public class UpdateHandlers
         //};
 
         //Message sentMessage = await action;
-
-        if(_commandService.MyCommands.TryGetValue(message.Text, out var command))
-        {
-            await command.Execute(update);
-        }
     }
 
     private async Task<Message> StartCommand(Message message, CancellationToken cancellationToken)
     {
         string userIdText = $"Genesis hisobot вас приветсвует!\n\rВаш user id = `{message.From?.Id}`";
-        await _userService.SetIsTypeProjectName(message.From.Id, false);
+        await _userService.SetUserState(message.From.Id, Models.UserState.None);
 
         var buttons = new ReplyKeyboardMarkup(
             new[]
@@ -152,7 +149,7 @@ public class UpdateHandlers
     {
         string userIdText = $"Пришлите chatId и название проекта в таком формате:\n\nchatId:название_проекта";
 
-        await _userService.SetIsTypeProjectName(message.From.Id, true);
+        await _userService.SetUserState(message.From.Id, Models.UserState.CreateProject);
 
         return await _botClient.SendTextMessageAsync(
             chatId: message.Chat.Id,
@@ -165,7 +162,7 @@ public class UpdateHandlers
         string userIdText = $"*User id =* `{message.From?.Id}` \n\rКоманда не найдена";
         var userId = message.From.Id;
 
-        if (_userService.IsTypeProjectName(userId))
+        if (_userService.GetUserState(userId) == Models.UserState.CreateProject)
         {
             return await CreateProject(message, cancellationToken);
         }
@@ -190,7 +187,7 @@ public class UpdateHandlers
             var result = _projectService.CreateProject(chatId, projectName);
             if (result.Success is true)
             {
-                await _userService.SetIsTypeProjectName(message.From.Id, false);
+                await _userService.SetUserState(message.From.Id, Models.UserState.None);
                 return await _botClient.SendTextMessageAsync(
                     chatId: message.Chat.Id,
                     text: result.Message,

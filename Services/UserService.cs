@@ -1,4 +1,5 @@
 ﻿using HisoBOT.DB;
+using HisoBOT.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HisoBOT.Services;
@@ -18,25 +19,25 @@ public class UserService
         return isAdmin;
     }
 
-    public bool IsTypeProjectName(long userId)
+    public UserState GetUserState(long userId)
     {
-        var isTypeProjectName = _context.Users
+        var user = _context.Users
             .FirstOrDefault(u => u.Id == userId);
        
-        if (isTypeProjectName is null)
-            return false;
+        if (user is null)
+            return UserState.None;
 
-        return isTypeProjectName.IsTypeProjectName;
+        return user.UserState;
     }
 
-    public async Task SetIsTypeProjectName(long userId, bool isTypeProjectName)
+    public async Task SetUserState(long userId, UserState userState)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user is null)
             return;
 
-        user.IsTypeProjectName = isTypeProjectName;
+        user.UserState = userState;
         await _context.SaveChangesAsync();
     }
 }

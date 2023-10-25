@@ -3,6 +3,6 @@
     public class User
     {
         public long Id { get; set; }
-        public bool IsTypeProjectName { get; set; } = false;
+        public UserState UserState { get; set; } = UserState.None;
     }
 }

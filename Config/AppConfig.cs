@@ -21,7 +21,7 @@ public static class AppConfig
         services.AddScoped<HisobotService>();
         services.AddScoped<ProjectService>();
         services.AddScoped<UpdateHandlers>();
-        services.AddScoped<CommandService>();
+        services.AddScoped<CommandExecutor>();
         services.AddDbContext<AppDbContext>();
         services.AddHostedService<ConfigureWebhook>();
     }

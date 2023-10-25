@@ -1,6 +1,5 @@
 ﻿using HisoBOT.Commands.Interfaces;
 using HisoBOT.Services;
-using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
