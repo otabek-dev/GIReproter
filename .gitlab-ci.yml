@@ -15,4 +15,5 @@ migration:
   - hisobot
   stage: migration
   script:
-    - dotnet ef database update
+    - pwd
+    - ll
