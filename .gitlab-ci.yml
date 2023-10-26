@@ -24,5 +24,6 @@ migration:
   - dev
   stage: migration
   script:
+    - dotnet ef database update
     - pwd
     - ls -all
