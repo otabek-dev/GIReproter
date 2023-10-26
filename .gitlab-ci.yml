@@ -1,9 +1,7 @@
 stages:
   - build
-  - test
-  - deploy
 
-print_build:
+build:
   tags:
   - hisobot
   stage: 
