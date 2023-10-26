@@ -8,4 +8,4 @@ build:
   stage: build
   script:
     - sudo cd /home/otabek/HisoBOT
-    - dotnet build
+    - dotnet build 
