@@ -1,5 +1,6 @@
 stages:
   - build
+  - migration
   - start
 
 build:
@@ -7,4 +8,4 @@ build:
   - hisobot
   stage: build
   script:
-    - pwd
+    - dotnet build
