@@ -7,5 +7,4 @@ build:
   - hisobot
   stage: build
   script:
-    - cd /home/
-    - sudo mkdir testproject
+    - pwd
