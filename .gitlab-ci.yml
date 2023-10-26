@@ -1,9 +1,11 @@
 stages:
   - build
+  - start
 
 build:
   tags:
   - hisobot
   stage: build
   script:
-  - dotnet build
+    - cd /home/otabek/HisoBOT
+    - dotnet build
