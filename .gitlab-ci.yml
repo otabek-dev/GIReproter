@@ -7,5 +7,5 @@ build:
   - hisobot
   stage: build
   script:
-    - sudo cd /home/otabek/HisoBOT
+    - cd /home/otabek/HisoBOT
     - dotnet build 
