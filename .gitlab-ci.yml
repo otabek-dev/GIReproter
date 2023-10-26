@@ -11,6 +11,13 @@ build:
     - dotnet build
     - pwd
     - ls -all
+  artifacts:
+    untracked: true
+    when: on_success
+    paths:
+      - "bin/"
+      - "obj/"
+
 
 migration:
   tags:
