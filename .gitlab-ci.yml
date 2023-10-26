@@ -9,3 +9,10 @@ build:
   stage: build
   script:
     - dotnet build
+
+migration:
+  tags:
+  - hisobot
+  stage: migration
+  script:
+    - dotnet ef database update
