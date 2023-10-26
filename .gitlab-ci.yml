@@ -3,12 +3,12 @@ stages:
   - test
   - deploy
 
-build:
+print_build:
   stage: build
   script:
     - echo "Building the application..."
 
-test:
+print_test:
   stage: test
   script:
     - echo "Running tests..."
