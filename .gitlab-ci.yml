@@ -1,12 +1,9 @@
 stages:
   - build
-  - test
-  - deploy
 
-print_build:
+build:
   tags:
   - hisobot
-  stage: 
-  - build
+  stage: build
   script:
   - echo "Building the application..."
