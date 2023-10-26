@@ -5,7 +5,7 @@ stages:
 
 build:
   tags:
-  - hisobot
+  - dev
   stage: build
   script:
     - dotnet build
@@ -14,7 +14,7 @@ build:
 
 migration:
   tags:
-  - hisobot
+  - dev
   stage: migration
   script:
     - pwd
