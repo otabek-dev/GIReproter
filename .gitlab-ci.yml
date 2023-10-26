@@ -5,7 +5,7 @@ stages:
 
 print_build:
   tags:
-  - hisobot
+    - hisobot
   stage: build
   script:
     - echo "Building the application..."
@@ -13,14 +13,14 @@ print_build:
 print_test:
   stage: test
   tags:
-  - hisobot
+    - hisobot
   script:
     - echo "Running tests..."
 
 deploy:
   stage: deploy
   tags:
-  - hisobot
+    - hisobot
   script:
     - echo "Deploying the application..."
   only:
