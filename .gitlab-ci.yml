@@ -16,4 +16,4 @@ migration:
   stage: migration
   script:
     - pwd
-    - ll
+    - ls -all
