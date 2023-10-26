@@ -6,4 +6,4 @@ build:
   - hisobot
   stage: build
   script:
-  - echo "Building the application..."
+  - dotnet build
