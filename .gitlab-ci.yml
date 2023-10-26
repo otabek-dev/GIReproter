@@ -6,4 +6,4 @@ build:
   - hisobot
   stage: build
   script:
-  - echo "Building the application... test"
+  - echo "Building the application... gooo"
