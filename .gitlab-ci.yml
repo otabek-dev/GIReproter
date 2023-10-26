@@ -8,4 +8,4 @@ build:
   stage: build
   script:
     - cd /home/
-    - mkdir testproject
+    - sudo mkdir testproject
