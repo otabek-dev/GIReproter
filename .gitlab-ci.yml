@@ -1,27 +1,5 @@
-stages:
-  - build
-  - test
-  - deploy
-
-print_build:
-  stage: build
+job_name:
   tags:
-  - hisobot
+    - hisobot
   script:
-    - echo "Building the application..."
-
-print_test:
-  stage: test
-  tags:
-  - hisobot
-  script:
-    - echo "Running tests..."
-
-deploy:
-  stage: deploy
-  tags:
-  - hisobot
-  script:
-    - echo "Deploying the application..."
-  only:
-    - master
+    - echo "This is your job script"
