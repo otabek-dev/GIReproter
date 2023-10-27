@@ -51,8 +51,8 @@ Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=true
 WantedBy=multi-user.target
 ```
 
-<aside>
-🛠 sudo systemctl enable PROJECT_NAME.service
-sudo systemctl start PROJECT_NAME.service
-sudo systemctl restart hisobot.service
-</aside>
+> 🛠 Код для запуска сервиса <br/>
+sudo systemctl enable PROJECT_NAME.service <br/>
+sudo systemctl start PROJECT_NAME.service <br/>
+sudo systemctl restart PROJECT_NAME.service
+
