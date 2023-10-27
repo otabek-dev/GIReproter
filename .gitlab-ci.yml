@@ -18,7 +18,6 @@ build:
       - "bin/"
       - "obj/"
 
-
 migration:
   tags:
   - dev

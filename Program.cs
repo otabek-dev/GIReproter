@@ -12,6 +12,11 @@ builder.Services.BotConfigure(builder.Configuration);
 
 var app = builder.Build();
 
+//if (app.Environment.IsProduction())
+//{
+//    Console.WriteLine(builder.Configuration["Prod"]);
+//}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
