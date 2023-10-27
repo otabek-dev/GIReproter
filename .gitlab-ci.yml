@@ -1,9 +1,50 @@
 stages:
   - build
+  - migration
+  - publish
 
 build:
   tags:
-  - hisobot
+  - dev
   stage: build
   script:
-  - dotnet build
+    - dotnet build
+    - pwd
+    - ls -all
+  artifacts:
+    untracked: true
+    when: on_success
+    paths:
+      - "bin/"
+      - "obj/"
+
+
+migration:
+  tags:
+  - dev
+  stage: migration
+  script:
+    - dotnet ef database update
+    - pwd
+    - ls -all
+  artifacts:
+    untracked: true
+    when: on_success
+    paths:
+      - "bin/"
+      - "obj/"
+
+publish:
+  tags:
+  - dev
+  stage: publish
+  script:
+    - dotnet publish --configuration Release
+    - pwd
+    - ls -all
+  artifacts:
+    untracked: true
+    when: on_success
+    paths:
+      - "bin/"
+      - "obj/"
