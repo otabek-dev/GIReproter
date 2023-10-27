@@ -26,3 +26,33 @@
 - Админ может добавить произвольное количество групп или каналов к боту.
 - По АПИ приходит информация и название проекта по которому надо сделать рассылку.
 - Проверка на уникальность chat id при добавлении в БД.
+
+
+---
+/etc/systemd/system/hisobot.service
+```
+[Unit]
+Description=hisobot
+
+[Service]
+WorkingDirectory=/home/otabek/builds/zseWQ-xm/0/mentos_dev/HisoBOT/bin/Release/net7.0/publish/
+ExecStart=/usr/bin/dotnet /home/otabek/builds/zseWQ-xm/0/mentos_dev/HisoBOT/bin/Release/net7.0/HisoBOT.dll
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-hisobot
+User=otabek
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://0.0.0.0:7777
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+<aside>
+🛠 sudo systemctl enable PROJECT_NAME.service
+sudo systemctl start PROJECT_NAME.service
+sudo systemctl restart hisobot.service
+</aside>
