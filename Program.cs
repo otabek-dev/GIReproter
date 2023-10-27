@@ -17,11 +17,11 @@ var app = builder.Build();
 //    Console.WriteLine(builder.Configuration["Prod"]);
 //}
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseAuthorization();
 app.MapControllers();
