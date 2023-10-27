@@ -33,14 +33,15 @@ migration:
       - "bin/"
       - "obj/"
 
-publish:
+publish_and_start:
   tags:
   - dev
   stage: publish
   script:
     - dotnet publish --configuration Release
-    - pwd
-    - ls -all
+    - sudo systemctl enable hisobot.service
+    - sudo systemctl start hisobot.service
+    - sudo systemctl restart hisobot.service
   artifacts:
     untracked: true
     when: on_success
