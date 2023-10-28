@@ -34,12 +34,12 @@ namespace HisoBOT.Commands
                         text: "Проектов не найдено!");
             }
 
-            var projectStrings = projects.Select(p => $"{p.ChatId}:{p.Name}");
+            var projectStrings = projects.Select(p => $"`{p.ChatId}:{p.Name}`");
             string projectsAsString = string.Join(Environment.NewLine, projectStrings);
 
             await _botClient.SendTextMessageAsync(
                        chatId: message.Chat.Id,
-                       text: "Ваши проекты: ```\n\r" + projectsAsString + "```",
+                       text: "Ваши проекты:\n\r" + projectsAsString,
                        parseMode: ParseMode.Markdown);
         }
 

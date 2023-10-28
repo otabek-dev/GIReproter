@@ -38,9 +38,13 @@ namespace HisoBOT.Services
             return new Result(true, "Проект создан");
         }
 
-        public void DeleteProject(string chatId)
+        public Result DeleteProject(string chatId)
         {
-            _context.Projects.Where(p => p.ChatId == chatId).ExecuteDelete();
+            var project = _context.Projects.FirstOrDefault(x => x.ChatId == chatId);
+            if (project == null) 
+                return new Result(false, "Проект не найден! Попробуйте заново.");
+            _context.Projects.Remove(project);
+            return new Result(true, $"Проект `{project.ChatId}` удален!");
         }
     }
 }

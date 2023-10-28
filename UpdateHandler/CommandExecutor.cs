@@ -11,7 +11,6 @@ namespace HisoBOT.UpdateHandler
     {
         private Dictionary<string, ICommand> MyCommands { get; init; }
         private Dictionary<State, ICommand> States { get; init; }
-        
         private readonly UserService _userService;
 
         public CommandExecutor(
@@ -26,6 +25,7 @@ namespace HisoBOT.UpdateHandler
                 { "/start", new StartCommand(botClient, userService) },
                 { "Мои проекты", new MyProjectsCommand(botClient, projectService) },
                 { "Добавить проект", new CreateNewProjectCommand(botClient, userService, projectService) },
+                { "Удалить проект", new DeletePorjectCommand(botClient,userService,projectService) }
             };
 
             foreach (var command in MyCommands)
@@ -39,21 +39,26 @@ namespace HisoBOT.UpdateHandler
         {
             var userId = update.Message.From.Id;
             var userState = _userService.GetUserState(userId);
+            ICommand? command;
 
-            if (MyCommands.TryGetValue(update.Message.Text, out var command))
-            {
+            if (MyCommands.TryGetValue(update.Message.Text, out command))
                 if (command.State == State.Start)
                 {
                     await command.Execute(update);
                     return;
                 }
 
+            if (userState == State.All 
+                && MyCommands.TryGetValue(update.Message.Text, out command))
+            {
                 await command.Execute(update);
+                return;
             }
 
-            if (States.TryGetValue(userState, out var command1))
+            if (States.TryGetValue(userState, out command))
             {
-                await command1.GetUpdate(update);
+                await command.GetUpdate(update);
+                return;
             }
         }
     }

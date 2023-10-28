@@ -2,7 +2,6 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace HisoBOT.UpdateHandler;
 
@@ -10,18 +9,15 @@ public class UpdateHandlers
 {
     private readonly ITelegramBotClient _botClient;
     private readonly UserService _userService;
-    private readonly ProjectService _projectService;
     private readonly CommandExecutor _commandExecutor;
 
     public UpdateHandlers(
-        ITelegramBotClient botClient, 
-        UserService userService, 
-        ProjectService projectService,
+        ITelegramBotClient botClient,
+        UserService userService,
         CommandExecutor commandExecutor)
     {
         _botClient = botClient;
         _userService = userService;
-        _projectService = projectService;
         _commandExecutor = commandExecutor;
     }
 
