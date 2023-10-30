@@ -22,7 +22,8 @@ namespace HisoBOT.DB
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 183818121 }
+                new User { Id = 183818121 },
+                new User { Id = 5097523800 }
             );
         }
     }
