@@ -7,23 +7,24 @@ namespace HisoBOT.Config
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _botConfig;
-        private readonly ITelegramBotClient _botClient;
+        //private readonly ITelegramBotClient _botClient;
 
         public WebhookConfig(
             IServiceProvider serviceProvider,
-            IConfiguration configuration,
-            ITelegramBotClient telegramBot)
+            IConfiguration configuration
+            //ITelegramBotClient telegramBot
+            )
         {
             _serviceProvider = serviceProvider;
             _botConfig = configuration;
-            _botClient = telegramBot;
+            //_botClient = telegramBot;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            //using var scope = _serviceProvider.CreateScope();
-            //var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
-            await _botClient.SetWebhookAsync(
+            using var scope = _serviceProvider.CreateScope();
+            var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
+            await botClient.SetWebhookAsync(
                 url: _botConfig["HostAddress"],
                 allowedUpdates: Array.Empty<UpdateType>(),
                 cancellationToken: cancellationToken);
@@ -31,9 +32,9 @@ namespace HisoBOT.Config
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            //using var scope = _serviceProvider.CreateScope();
-            //var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
-            await _botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);
+            using var scope = _serviceProvider.CreateScope();
+            var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
+            await botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);
         }
     }
 }

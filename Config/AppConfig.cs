@@ -9,26 +9,26 @@ public static class AppConfig
 {
     public static void BotConfigure(this IServiceCollection services, IConfiguration configuration)
     {
-        //services
-        //    .AddHttpClient("telegram_bot_client")
-        //    .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
-        //    {
-        //        TelegramBotClientOptions options = new(configuration["BotToken"]);
-        //        return new TelegramBotClient(options, httpClient);
-        //    });
-        //.ConfigurePrimaryHttpMessageHandler(() =>
-        //{
-        //    return new SocketsHttpHandler()
-        //    {
-        //        PooledConnectionLifetime = TimeSpan.FromMinutes(60),
-        //    };
-        //})
-        //.SetHandlerLifetime(Timeout.InfiniteTimeSpan);
-
-        services.AddSingleton<ITelegramBotClient>(x =>
+        services
+            .AddHttpClient("telegram_bot_client")
+            .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
+            {
+                TelegramBotClientOptions options = new(configuration["BotToken"]);
+                return new TelegramBotClient(options, httpClient);
+            })
+        .ConfigurePrimaryHttpMessageHandler(() =>
         {
-            return new TelegramBotClient(configuration["BotToken"]);
-        });
+            return new SocketsHttpHandler()
+            {
+                PooledConnectionLifetime = TimeSpan.FromMinutes(60),
+            };
+        })
+        .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
+
+        //services.AddSingleton<ITelegramBotClient>(x =>
+        //{
+        //    return new TelegramBotClient(configuration["BotToken"]);
+        //});
 
         services.AddScoped<UserService>();
         services.AddScoped<HisobotService>();
