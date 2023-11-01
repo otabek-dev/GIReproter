@@ -15,15 +15,15 @@ public static class AppConfig
             {
                 TelegramBotClientOptions options = new(configuration["BotToken"]);
                 return new TelegramBotClient(options, httpClient);
-            })
-            .ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                return new SocketsHttpHandler()
-                {
-                    PooledConnectionLifetime = TimeSpan.FromMinutes(60),
-                };
-            })
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
+            });
+            //.ConfigurePrimaryHttpMessageHandler(() =>
+            //{
+            //    return new SocketsHttpHandler()
+            //    {
+            //        PooledConnectionLifetime = TimeSpan.FromMinutes(60),
+            //    };
+            //})
+            //.SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
         //services.AddSingleton<ITelegramBotClient>(x =>
         //{
