@@ -10,7 +10,7 @@ build:
   script:
     - dotnet build
     - pwd
-    - ls -all
+    - ls -all -v
   artifacts:
     untracked: true
     when: on_success
@@ -25,7 +25,7 @@ migration:
   script:
     - dotnet ef database update
     - pwd
-    - ls -all
+    - ls -all -v
   artifacts:
     untracked: true
     when: on_success
