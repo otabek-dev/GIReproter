@@ -29,6 +29,23 @@
 
 
 ---
+### How to deploy ci/cd
+
+Download the binary for your system <br />
+`sudo curl -L --output /usr/local/bin/gitlab-runner https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64`
+
+Give it permission to execute <br />
+`sudo chmod +x /usr/local/bin/gitlab-runner`
+
+Install GitLab Runner <br />
+`sudo gitlab-runner install --user=root --working-directory=/{dir}/`
+
+Start runner <br />
+`sudo gitlab-runner start`
+
+install git <br />
+`sudo apt install git`
+
 /etc/systemd/system/hisobot.service
 ```
 [Unit]
@@ -55,3 +72,4 @@ WantedBy=multi-user.target
 sudo systemctl enable PROJECT_NAME.service <br/>
 sudo systemctl start PROJECT_NAME.service <br/>
 sudo systemctl restart PROJECT_NAME.service
+
