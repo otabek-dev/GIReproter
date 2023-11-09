@@ -73,3 +73,17 @@ sudo systemctl enable PROJECT_NAME.service <br/>
 sudo systemctl start PROJECT_NAME.service <br/>
 sudo systemctl restart PROJECT_NAME.service
 
+
+-> PostgreSQL 15
+-> dotnet sdk 7
+-> aspnet core runtime 7
+-> nginx
+```
+dotnet tool install --global dotnet-ef
+cat << \EOF >> ~/.bash_profile
+# Add .NET Core SDK tools
+export PATH="$PATH:/root/.dotnet/tools"
+EOF
+```
+source ~/.bash_profile
+
