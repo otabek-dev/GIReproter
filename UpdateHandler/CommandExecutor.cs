@@ -1,11 +1,11 @@
-﻿using HisoBOT.Commands;
-using HisoBOT.Commands.Interfaces;
-using HisoBOT.Models;
-using HisoBOT.Services;
+﻿using GIReporter.Commands;
+using GIReporter.Commands.Interfaces;
+using GIReporter.Models;
+using GIReporter.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace HisoBOT.UpdateHandler
+namespace GIReporter.UpdateHandler
 {
     public class CommandExecutor : ITelegramUpdateListener
     {

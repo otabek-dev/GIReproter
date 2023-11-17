@@ -1,4 +1,4 @@
-﻿namespace HisoBOT.DTOs
+﻿namespace GIReporter.DTOs
 {
     public class HisobotDTO
     {

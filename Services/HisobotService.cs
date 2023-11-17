@@ -1,11 +1,11 @@
-﻿using HisoBOT.DB;
+﻿using GIReporter.DB;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace HisoBOT.Services
+namespace GIReporter.Services
 {
     public class HisobotService
     {

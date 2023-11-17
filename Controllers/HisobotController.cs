@@ -1,8 +1,8 @@
-﻿using HisoBOT.DTOs;
-using HisoBOT.Services;
+﻿using GIReporter.DTOs;
+using GIReporter.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HisoBOT.Controllers
+namespace GIReporter.Controllers
 {
     [ApiController]
     [Route("/[controller]")]

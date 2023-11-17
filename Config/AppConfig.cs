@@ -1,34 +1,18 @@
-﻿using HisoBOT.DB;
-using HisoBOT.Services;
-using HisoBOT.UpdateHandler;
+﻿using GIReporter.DB;
+using GIReporter.Services;
+using GIReporter.UpdateHandler;
 using Telegram.Bot;
 
-namespace HisoBOT.Config;
+namespace GIReporter.Config;
 
 public static class AppConfig
 {
     public static void BotConfigure(this IServiceCollection services, IConfiguration configuration)
     {
-        services
-            .AddHttpClient("telegram_bot_client")
-            .AddTypedClient<ITelegramBotClient>((httpClient, sp) =>
-            {
-                TelegramBotClientOptions options = new(configuration["BotToken"]);
-                return new TelegramBotClient(options, httpClient);
-            })
-        .ConfigurePrimaryHttpMessageHandler(() =>
+        services.AddSingleton<ITelegramBotClient>(x =>
         {
-            return new SocketsHttpHandler()
-            {
-                PooledConnectionLifetime = TimeSpan.FromMinutes(60),
-            };
-        })
-        .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
-
-        //services.AddSingleton<ITelegramBotClient>(x =>
-        //{
-        //    return new TelegramBotClient(configuration["BotToken"]);
-        //});
+            return new TelegramBotClient(configuration["BotToken"]);
+        });
 
         services.AddScoped<UserService>();
         services.AddScoped<HisobotService>();

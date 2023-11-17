@@ -1,7 +1,7 @@
-﻿using HisoBOT.Models;
+﻿using GIReporter.Models;
 using Telegram.Bot.Types;
 
-namespace HisoBOT.Commands.Interfaces
+namespace GIReporter.Commands.Interfaces
 {
     public interface ICommand
     {

@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot.Types;
 
-namespace HisoBOT.UpdateHandler
+namespace GIReporter.UpdateHandler
 {
     public interface ITelegramUpdateListener
     {

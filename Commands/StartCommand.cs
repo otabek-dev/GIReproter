@@ -1,12 +1,12 @@
-﻿using HisoBOT.Commands.Interfaces;
-using HisoBOT.Models;
-using HisoBOT.Services;
+﻿using GIReporter.Commands.Interfaces;
+using GIReporter.Models;
+using GIReporter.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace HisoBOT.Commands
+namespace GIReporter.Commands
 {
     public class StartCommand : ICommand
     {

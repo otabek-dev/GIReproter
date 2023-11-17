@@ -1,14 +1,5 @@
 {
   "profiles": {
-    "Release": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "http://0.0.0.0:7777"
-    },
     "http": {
       "commandName": "Project",
       "launchBrowser": true,

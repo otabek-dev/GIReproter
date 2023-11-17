@@ -1,4 +1,4 @@
-using HisoBOT.Config;
+using GIReporter.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +12,8 @@ builder.Services.BotConfigure(builder.Configuration);
 
 var app = builder.Build();
 
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-//}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthorization();
 app.MapControllers();

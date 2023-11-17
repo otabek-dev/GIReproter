@@ -1,9 +1,9 @@
-﻿using HisoBOT.Services;
+﻿using GIReporter.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace HisoBOT.UpdateHandler;
+namespace GIReporter.UpdateHandler;
 
 public class UpdateHandlers
 {

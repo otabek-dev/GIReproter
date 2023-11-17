@@ -1,4 +1,4 @@
-﻿namespace HisoBOT.Results
+﻿namespace GIReporter.Results
 {
     public class Result
     {

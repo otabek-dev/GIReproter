@@ -1,9 +1,9 @@
-﻿using HisoBOT.DB;
-using HisoBOT.Models;
-using HisoBOT.Results;
+﻿using GIReporter.DB;
+using GIReporter.Models;
+using GIReporter.Results;
 using Microsoft.EntityFrameworkCore;
 
-namespace HisoBOT.Services
+namespace GIReporter.Services
 {
     public class ProjectService
     {

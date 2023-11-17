@@ -1,7 +1,7 @@
-﻿using HisoBOT.Models;
+﻿using GIReporter.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HisoBOT.DB
+namespace GIReporter.DB
 {
     public class AppDbContext : DbContext
     {

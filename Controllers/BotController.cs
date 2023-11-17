@@ -1,8 +1,8 @@
-﻿using HisoBOT.UpdateHandler;
+﻿using GIReporter.UpdateHandler;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
 
-namespace HisoBOT.Controllers
+namespace GIReporter.Controllers
 {
     [Route("/")]
     [ApiController]

@@ -1,8 +1,8 @@
-﻿using HisoBOT.DB;
-using HisoBOT.Models;
+﻿using GIReporter.DB;
+using GIReporter.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HisoBOT.Services;
+namespace GIReporter.Services;
 
 public class UserService
 {

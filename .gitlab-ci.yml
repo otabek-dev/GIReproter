@@ -9,29 +9,13 @@ build:
   stage: build
   script:
     - dotnet build
-    - pwd
-    - ls -all
-  artifacts:
-    untracked: true
-    when: on_success
-    paths:
-      - "bin/"
-      - "obj/"
 
 migration:
   tags:
   - dev
   stage: migration
   script:
-    - dotnet ef database update
-    - pwd
-    - ls -all
-  artifacts:
-    untracked: true
-    when: on_success
-    paths:
-      - "bin/"
-      - "obj/"
+    - dotnet ef database updates
 
 publish_and_start:
   tags:
@@ -42,9 +26,3 @@ publish_and_start:
     - sudo systemctl enable hisobot.service
     - sudo systemctl start hisobot.service
     - sudo systemctl restart hisobot.service
-  artifacts:
-    untracked: true
-    when: on_success
-    paths:
-      - "bin/"
-      - "obj/"

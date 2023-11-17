@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace HisoBOT.Migrations
+namespace GIReporter.Migrations
 {
     /// <inheritdoc />
     public partial class AddUserFieldTypeProjectName : Migration

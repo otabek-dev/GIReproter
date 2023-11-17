@@ -1,4 +1,4 @@
-﻿namespace HisoBOT.Models
+﻿namespace GIReporter.Models
 {
     public class User
     {
