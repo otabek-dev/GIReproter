@@ -24,4 +24,4 @@ deployment:
   - dev
   stage: deployment
   script:
-    - sudo systemctl restart gi-reporter.service 
+    - echo sudo systemctl restart gi-reporter.service 
