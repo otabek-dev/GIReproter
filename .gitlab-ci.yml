@@ -1,7 +1,7 @@
 stages:
   - build
-  - migration
   - publish
+  - deployment
 
 build:
   tags:
@@ -9,20 +9,19 @@ build:
   stage: build
   script:
     - dotnet build
+    - dotnet ef database update
 
-migration:
-  tags:
-  - dev
-  stage: migration
-  script:
-    - dotnet ef database updates
-
-publish_and_start:
+publish:
   tags:
   - dev
   stage: publish
   script:
     - dotnet publish --configuration Release
-    - sudo systemctl enable hisobot.service
-    - sudo systemctl start hisobot.service
-    - sudo systemctl restart hisobot.service
+    - sudo cp ./GIReporter/bin/Release/net7.0/* /home/gi-reporter/ -r 
+
+deployment:
+  tags:
+  - dev
+  stage: deployment
+  script:
+    - sudo systemctl restart gi-reporter.service 
