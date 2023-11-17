@@ -9,7 +9,7 @@ build:
   stage: build
   script:
     - dotnet build
-    - dotnet ef database update
+    - dotnet ef database update --project GIReporter
 
 publish:
   tags:
