@@ -7,13 +7,13 @@ using Telegram.Bot.Types.Enums;
 
 namespace GIReporter.Services
 {
-    public class HisobotService
+    public class ReporterService
     {
         private readonly ITelegramBotClient _botClient;
         private readonly AppDbContext _context;
         private readonly ProjectService _projectService;
 
-        public HisobotService(ITelegramBotClient botClient, AppDbContext context, ProjectService projectService)
+        public ReporterService(ITelegramBotClient botClient, AppDbContext context, ProjectService projectService)
         {
             _botClient = botClient;
             _context = context;

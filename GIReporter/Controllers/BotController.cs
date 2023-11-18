@@ -9,10 +9,7 @@ namespace GIReporter.Controllers
     public class BotController : ControllerBase
     {
         [HttpGet]
-        public string Get()
-        {
-            return "Telegram bot was started";
-        }
+        public string Get() => "Telegram bot was started";
 
         [HttpPost]
         public async Task Post(

@@ -6,17 +6,17 @@ namespace GIReporter.Controllers
 {
     [ApiController]
     [Route("/[controller]")]
-    public class HisobotController : ControllerBase
+    public class ReporterController : ControllerBase
     {
-        private readonly HisobotService _hisobotService;
+        private readonly ReporterService _hisobotService;
 
-        public HisobotController(HisobotService hisobotService)
+        public ReporterController(ReporterService hisobotService)
         {
             _hisobotService = hisobotService;
         }
 
         [HttpPost]
-        public async Task Post([FromBody] HisobotDTO hisobot)
+        public async Task Post([FromBody] ReporterDTO hisobot)
         {
             await _hisobotService.SendHisobot(hisobot.Info, hisobot.ProjectName);
         }

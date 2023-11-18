@@ -15,7 +15,7 @@ public static class AppConfig
         });
 
         services.AddScoped<UserService>();
-        services.AddScoped<HisobotService>();
+        services.AddScoped<ReporterService>();
         services.AddScoped<ProjectService>();
         services.AddScoped<UpdateHandlers>();
         services.AddScoped<CommandExecutor>();
