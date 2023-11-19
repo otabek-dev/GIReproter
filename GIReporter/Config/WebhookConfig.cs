@@ -7,17 +7,13 @@ namespace GIReporter.Config
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IConfiguration _botConfig;
-        //private readonly ITelegramBotClient _botClient;
 
         public WebhookConfig(
             IServiceProvider serviceProvider,
-            IConfiguration configuration
-            //ITelegramBotClient telegramBot
-            )
+            IConfiguration configuration)
         {
             _serviceProvider = serviceProvider;
             _botConfig = configuration;
-            //_botClient = telegramBot;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

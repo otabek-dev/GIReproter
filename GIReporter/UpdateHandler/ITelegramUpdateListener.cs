@@ -4,6 +4,6 @@ namespace GIReporter.UpdateHandler
 {
     public interface ITelegramUpdateListener
     {
-        public async Task GetUpdate(Update update) { }
+        public async Task CommandExexute(Update update) { }
     }
 }

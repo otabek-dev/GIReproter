@@ -7,13 +7,13 @@ using Telegram.Bot.Types;
 
 namespace GIReporter.UpdateHandler
 {
-    public class CommandExecutor : ITelegramUpdateListener
+    public class CommandInvoker : ITelegramUpdateListener
     {
         private Dictionary<string, ICommand> MyCommands { get; init; }
         private Dictionary<State, ICommand> States { get; init; }
         private readonly UserService _userService;
 
-        public CommandExecutor(
+        public CommandInvoker(
             ITelegramBotClient botClient,
             UserService userService,
             ProjectService projectService)
@@ -35,7 +35,7 @@ namespace GIReporter.UpdateHandler
             }
         }
 
-        public async Task GetUpdate(Update update)
+        public async Task CommandExexute(Update update)
         {
             var userId = update.Message.From.Id;
             var userState = _userService.GetUserState(userId);

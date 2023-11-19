@@ -9,7 +9,6 @@ namespace GIReporter.Commands
 {
     public class DeletePorjectCommand : ICommand
     {
-        public string Name => "/deleteProject";
         public static string CommandName => "/deleteProject";
         public State State => State.DeleteProject;
         

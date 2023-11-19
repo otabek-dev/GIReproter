@@ -18,7 +18,7 @@ public static class AppConfig
         services.AddScoped<ReporterService>();
         services.AddScoped<ProjectService>();
         services.AddScoped<UpdateHandlers>();
-        services.AddScoped<CommandExecutor>();
+        services.AddScoped<CommandInvoker>();
         services.AddDbContext<AppDbContext>();
         services.AddHostedService<WebhookConfig>();
     }

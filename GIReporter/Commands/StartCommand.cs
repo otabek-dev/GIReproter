@@ -1,6 +1,7 @@
 ﻿using GIReporter.Commands.Interfaces;
 using GIReporter.Models;
 using GIReporter.Services;
+using GIReporter.States;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -8,6 +9,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GIReporter.Commands
 {
+    [AnyState]
     public class StartCommand : ICommand
     {
         private readonly ITelegramBotClient _botClient;
@@ -44,7 +46,7 @@ namespace GIReporter.Commands
                 });
 
             buttons.ResizeKeyboard = true;
-
+                
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 text: userIdText,

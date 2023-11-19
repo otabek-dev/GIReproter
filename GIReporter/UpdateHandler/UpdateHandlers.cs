@@ -9,16 +9,16 @@ public class UpdateHandlers
 {
     private readonly ITelegramBotClient _botClient;
     private readonly UserService _userService;
-    private readonly CommandExecutor _commandExecutor;
+    private readonly CommandInvoker _commandInvoker;
 
     public UpdateHandlers(
         ITelegramBotClient botClient,
         UserService userService,
-        CommandExecutor commandExecutor)
+        CommandInvoker commandExecutor)
     {
         _botClient = botClient;
         _userService = userService;
-        _commandExecutor = commandExecutor;
+        _commandInvoker = commandExecutor;
     }
 
     public async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
@@ -27,7 +27,7 @@ public class UpdateHandlers
         {
             { Message: { } message } => BotOnMessageReceived(update, cancellationToken),
             { MyChatMember: { } myChatMember } => BotOnChatMember(myChatMember, cancellationToken),
-            _ => UnknownUpdateHandlerAsync(update, cancellationToken)
+            _ => UnknownUpdateHandlerAsync()
         };
 
         await handler;
@@ -77,11 +77,8 @@ public class UpdateHandlers
         if (!_userService.IsAdmin(message.From.Id))
             return;
 
-        await _commandExecutor.GetUpdate(update);
+        await _commandInvoker.CommandExexute(update);
     }
 
-    private Task UnknownUpdateHandlerAsync(Update update, CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    private Task UnknownUpdateHandlerAsync() => Task.CompletedTask;
 }
