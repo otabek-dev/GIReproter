@@ -2,14 +2,14 @@
 using GIReporter.Models;
 using GIReporter.Services;
 using GIReporter.States;
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GIReporter.Commands
 {
-    [AnyState]
+    [UserState(State.Any)]
     public class StartCommand : ICommand
     {
         private readonly ITelegramBotClient _botClient;
@@ -21,40 +21,22 @@ namespace GIReporter.Commands
             _userService = userService;
         }
 
-        public string Name => "/start";
+        public string CommandName => "/start";
+        public string Description => "start or restart bot and update command list";
 
-        public State State => State.Start;
-
-        public async Task Execute(Update update)
+        public async Task Execute(Message message)
         {
-            var message = update.Message;
-            string userIdText = $"Genesis hisobot вас приветсвует!\n\rВаш user id = `{message.From?.Id}`";
-            await _userService.SetUserState(message.From.Id, State.All);
-
-            var buttons = new ReplyKeyboardMarkup(
-                new[]
-                {
-                    new[]
-                    {
-                        new KeyboardButton("Добавить проект"),
-                        new KeyboardButton("Удалить проект")
-                    },
-                    new[]
-                    {
-                        new KeyboardButton("Мои проекты")
-                    }
-                });
-
-            buttons.ResizeKeyboard = true;
-                
+            string userIdText = $"Ваш user id = `{message.From.Id}`";
+            await _userService.SetUserStateAsync(message.From.Id, State.Any);
+            await _userService.SetInProcessCommand(message.From.Id, null);
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 text: userIdText,
                 parseMode: ParseMode.Markdown,
-                replyMarkup: buttons);
+                replyMarkup: default);
         }
 
-        public Task GetUpdate(Update update)
+        public Task GetUpdate(Message message)
         {
             return Task.CompletedTask;
         }

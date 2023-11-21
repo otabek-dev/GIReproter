@@ -1,12 +1,14 @@
 ﻿using GIReporter.Commands.Interfaces;
 using GIReporter.Models;
 using GIReporter.Services;
+using GIReporter.States;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace GIReporter.Commands
 {
+    [UserState(State.Any)]
     public class MyProjectsCommand : ICommand
     {
         private readonly ITelegramBotClient _botClient;
@@ -18,13 +20,12 @@ namespace GIReporter.Commands
             _projectService = projectService;
         }
 
-        public string Name => "/myProjects";
+        public string CommandName => "/myprojects";
 
-        public State State => State.All;
+        public string Description => "get my projects";
 
-        public async Task Execute(Update update)
+        public async Task Execute(Message message)
         {
-            var message = update.Message;
             var projects = _projectService.GetAllProjects();
 
             if (!projects.Any())
@@ -43,7 +44,7 @@ namespace GIReporter.Commands
                        parseMode: ParseMode.Markdown);
         }
 
-        public Task GetUpdate(Update update)
+        public Task GetUpdate(Message message)
         {
             return Task.CompletedTask;
         }

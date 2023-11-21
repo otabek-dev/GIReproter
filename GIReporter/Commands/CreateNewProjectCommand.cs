@@ -1,19 +1,22 @@
 ﻿using GIReporter.Commands.Interfaces;
 using GIReporter.Models;
 using GIReporter.Services;
+using GIReporter.States;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace GIReporter.Commands
 {
+    [UserState(State.CreateProject)]
     public class CreateNewProjectCommand : ICommand
     {
         private readonly UserService _userService;
-        private readonly ITelegramBotClient _botClient;
         private readonly ProjectService _projectService;
+        private readonly ITelegramBotClient _botClient;
+
         public CreateNewProjectCommand(
-            ITelegramBotClient botClient, 
+            ITelegramBotClient botClient,
             UserService userService,
             ProjectService projectService)
         {
@@ -22,29 +25,28 @@ namespace GIReporter.Commands
             _projectService = projectService;
         }
 
-        public string Name => "/createNewProject";
+        public string CommandName => "/createproject";
 
-        public State State => State.CreateProject;
+        public string Description => "create new project";
 
-        public async Task Execute(Update update)
+        public async Task Execute(Message message)
         {
-            var message = update.Message;
             string userIdText = $"Пришлите chatId и название проекта в таком формате:\n\nchatId:название_проекта";
 
-            await _userService.SetUserState(message.From.Id, State.CreateProject);
+            await _userService.SetUserStateAsync(message.From.Id, State.CreateProject);
+            await _userService.SetInProcessCommand(message.From.Id, CommandName);
 
             await _botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 text: userIdText);
         }
 
-        public async Task GetUpdate(Update update)
+        public async Task GetUpdate(Message message)
         {
-            var message = update.Message;
             string userIdText = $"*User id =* `{message.From?.Id}` \n\rКоманда не найдена";
             var userId = message.From.Id;
 
-            if (_userService.GetUserState(userId) == State.CreateProject)
+            if (await _userService.GetUserStateAsync(userId) == State.CreateProject)
             {
                 await CreateProject(message);
                 return;
@@ -69,7 +71,8 @@ namespace GIReporter.Commands
                 var result = _projectService.CreateProject(chatId, projectName);
                 if (result.Success is true)
                 {
-                    await _userService.SetUserState(message.From.Id, State.All);
+                    await _userService.SetUserStateAsync(message.From.Id, State.Any);
+                    await _userService.SetInProcessCommand(message.From.Id, null);
                     return await _botClient.SendTextMessageAsync(
                         chatId: message.Chat.Id,
                         text: result.Message,

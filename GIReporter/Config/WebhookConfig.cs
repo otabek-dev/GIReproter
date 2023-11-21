@@ -1,5 +1,5 @@
-﻿using Telegram.Bot.Types.Enums;
-using Telegram.Bot;
+﻿using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 
 namespace GIReporter.Config
 {

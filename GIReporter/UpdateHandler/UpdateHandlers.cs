@@ -1,4 +1,5 @@
 ﻿using GIReporter.Services;
+using System;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -11,10 +12,7 @@ public class UpdateHandlers
     private readonly UserService _userService;
     private readonly CommandInvoker _commandInvoker;
 
-    public UpdateHandlers(
-        ITelegramBotClient botClient,
-        UserService userService,
-        CommandInvoker commandExecutor)
+    public UpdateHandlers(ITelegramBotClient botClient, UserService userService, CommandInvoker commandExecutor)
     {
         _botClient = botClient;
         _userService = userService;
@@ -41,7 +39,7 @@ public class UpdateHandlers
             return;
 
         var userIdFromAdd = myChatMember.From.Id;
-        if (_userService.IsAdmin(userIdFromAdd))
+        if (await _userService.IsAdminAsync(userIdFromAdd))
         {
             if (myChatMember.NewChatMember is ChatMemberAdministrator)
             {
@@ -74,10 +72,10 @@ public class UpdateHandlers
         if (message.From is null)
             return;
 
-        if (!_userService.IsAdmin(message.From.Id))
+        if (!await _userService.IsAdminAsync(message.From.Id))
             return;
 
-        await _commandInvoker.CommandExexute(update);
+        await _commandInvoker.CommandExexute(message);
     }
 
     private Task UnknownUpdateHandlerAsync() => Task.CompletedTask;

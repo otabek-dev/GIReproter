@@ -1,65 +1,94 @@
-﻿using GIReporter.Commands;
-using GIReporter.Commands.Interfaces;
+﻿using GIReporter.Commands.Interfaces;
 using GIReporter.Models;
 using GIReporter.Services;
+using GIReporter.States;
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace GIReporter.UpdateHandler
 {
-    public class CommandInvoker : ITelegramUpdateListener
+    public class CommandInvoker
     {
-        private Dictionary<string, ICommand> MyCommands { get; init; }
-        private Dictionary<State, ICommand> States { get; init; }
+        private readonly Dictionary<string, ICommand> _commands = new();
+        private readonly ITelegramBotClient _botClient;
         private readonly UserService _userService;
 
         public CommandInvoker(
             ITelegramBotClient botClient,
             UserService userService,
-            ProjectService projectService)
+            IEnumerable<ICommand> commands)
         {
+            _botClient = botClient;
             _userService = userService;
-            States = new Dictionary<State, ICommand>();
-            MyCommands = new Dictionary<string, ICommand>
-            {
-                { "/start", new StartCommand(botClient, userService) },
-                { "Мои проекты", new MyProjectsCommand(botClient, projectService) },
-                { "Добавить проект", new CreateNewProjectCommand(botClient, userService, projectService) },
-                { "Удалить проект", new DeletePorjectCommand(botClient,userService,projectService) }
-            };
-
-            foreach (var command in MyCommands)
-            {
-                if (command.Value.State != State.All)
-                    States.Add(command.Value.State, command.Value);
-            }
+            foreach (var command in commands)
+                _commands.Add(command.CommandName, command);
         }
 
-        public async Task CommandExexute(Update update)
+        public async Task CommandExexute(Message message)
         {
-            var userId = update.Message.From.Id;
-            var userState = _userService.GetUserState(userId);
             ICommand? command;
+            var userId = message.From.Id;
+            var messageText = message.Text;
+            var commandInterfaceType = typeof(ICommand);
+            var userState = await _userService.GetUserStateAsync(userId);
+            var userInProgressCommand = await _userService.GetInProcessCommand(userId);
 
-            if (MyCommands.TryGetValue(update.Message.Text, out command))
-                if (command.State == State.Start)
+            if (messageText == "/start")
+            {
+                await _commands["/start"].Execute(message);
+                await SetBotCommands();
+                return;
+            }
+
+            if (userInProgressCommand is not null)
+                if (_commands.TryGetValue(userInProgressCommand, out command))
                 {
-                    await command.Execute(update);
+                    await command.GetUpdate(message);
                     return;
                 }
 
-            if (userState == State.All 
-                && MyCommands.TryGetValue(update.Message.Text, out command))
+            if (userState is not State.Any)
             {
-                await command.Execute(update);
+                var commands = _commands.Values
+                    .Where(type => type.GetType()?
+                        .GetCustomAttribute<UserStateAttribute>()?.State == userState);
+
+                if (commands is null)
+                {
+                    await _botClient.SendTextMessageAsync(message.Chat.Id, "Команда не найдена!");
+                    return;
+                }
+
+                foreach (var com in commands)
+                    if (com.CommandName == messageText)
+                    {
+                        await com.Execute(message);
+                        return;
+                    }
+
+                await _botClient.SendTextMessageAsync(message.Chat.Id, "Команда не найдена!");
                 return;
             }
 
-            if (States.TryGetValue(userState, out command))
-            {
-                await command.GetUpdate(update);
-                return;
-            }
+            if (_commands.TryGetValue(messageText, out command))
+                await command.Execute(message);
+            else
+                await _botClient.SendTextMessageAsync(message.Chat.Id, "Команда не найдена!");
+        }
+
+        private async Task SetBotCommands()
+        {
+            var botCommands = _commands.Values
+                    .Select(com => new BotCommand
+                    {
+                        Command = com.CommandName,
+                        Description = com.Description
+                    })
+                    .OrderBy(com => com.Command.Length)
+                    .ToList();
+
+            await _botClient.SetMyCommandsAsync(botCommands);
         }
     }
 }

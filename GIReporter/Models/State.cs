@@ -2,8 +2,7 @@
 {
     public enum State
     {
-        All,
-        Start,
+        Any,
         CreateProject,
         DeleteProject
     }

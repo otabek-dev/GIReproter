@@ -1,4 +1,5 @@
-﻿using GIReporter.DB;
+﻿using GIReporter.Commands.Interfaces;
+using GIReporter.DB;
 using GIReporter.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,24 +14,24 @@ public class UserService
         _context = context;
     }
 
-    public bool IsAdmin(long userId)
+    public async Task<bool> IsAdminAsync(long userId)
     {
-        var isAdmin = _context.Users.Any(u =>  u.Id == userId);
+        var isAdmin = await _context.Users.AnyAsync(u =>  u.Id == userId);
         return isAdmin;
     }
 
-    public State GetUserState(long userId)
+    public async Task<State> GetUserStateAsync(long userId)
     {
-        var user = _context.Users
-            .FirstOrDefault(u => u.Id == userId);
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
        
         if (user is null)
-            return State.All;
+            return State.Any;
 
         return user.UserState;
     }
 
-    public async Task SetUserState(long userId, State userState)
+    public async Task SetUserStateAsync(long userId, State userState)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
@@ -38,6 +39,27 @@ public class UserService
             return;
 
         user.UserState = userState;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<string?> GetInProcessCommand(long userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null)
+            return null;
+
+        return user.InProcessCommandName ?? null;
+    }
+
+    public async Task SetInProcessCommand(long userId, string? command)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null)
+            return;
+
+        user.InProcessCommandName = command;
         await _context.SaveChangesAsync();
     }
 }
