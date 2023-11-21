@@ -33,6 +33,7 @@ namespace GIReporter.Commands
                 await _botClient.SendTextMessageAsync(
                         chatId: message.Chat.Id,
                         text: "Проектов не найдено!");
+                return;
             }
 
             var projectStrings = projects.Select(p => $"`{p.ChatId}:{p.Name}`");
