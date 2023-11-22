@@ -1,5 +1,5 @@
 using GIReporter.Config;
-using System.Runtime.CompilerServices;
+using Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +13,8 @@ builder.Services.BotConfigure(builder.Configuration);
 builder.Services.RegisterCommand(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();
