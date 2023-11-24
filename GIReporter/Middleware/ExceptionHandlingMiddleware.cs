@@ -25,22 +25,22 @@ public class ExceptionHandlingMiddleware
         catch (KeyNotFoundException ex)
         {
             await HandleExceptionAsync(httpContext,
-                ex.Message,
+                ex,
                 HttpStatusCode.NotFound,
                 "It's impossible, but... Roberto NOT FOUND!!!");
         }
         catch (Exception ex)
         {
             await HandleExceptionAsync(httpContext,
-                ex.Message,
+                ex,
                 HttpStatusCode.InternalServerError,
                 "Internal server error");
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, string exMsg, HttpStatusCode httpStatusCode, string message)
+    private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode httpStatusCode, string message)
     {
-        _logger.LogError(exMsg);
+        _logger.LogError(ex.ToString());
 
         HttpResponse response = context.Response;
 
@@ -50,6 +50,7 @@ public class ExceptionHandlingMiddleware
         ErrorDTO errorDto = new()
         {
             Message = message,
+            ExceptionTittle = ex.Message,
             StatusCode = (int)httpStatusCode
         };
 
