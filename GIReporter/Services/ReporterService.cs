@@ -20,7 +20,7 @@ namespace GIReporter.Services
             _projectService = projectService;
         }
 
-        public async Task SendHisobot(string info, string projectName)
+        public async Task SendReportAsync(string info, string projectName)
         {
             var projects = await _context.Projects
                 .Where(p => p.Name == projectName)

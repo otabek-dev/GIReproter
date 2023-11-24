@@ -368,3 +368,6 @@ FodyWeavers.xsd
 appsettings.Development.json 
 appsettings.json 
 appsettings.Production.json
+/GIReporter/appsettings.json
+/GIReporter/appsettings.Development.json
+/GIReporter/appsettings.Production.json

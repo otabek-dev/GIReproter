@@ -18,7 +18,7 @@ namespace GIReporter.Controllers
         [HttpPost]
         public async Task Post([FromBody] ReporterDTO hisobot)
         {
-            await _hisobotService.SendHisobot(hisobot.Info, hisobot.ProjectName);
+            await _hisobotService.SendReportAsync(hisobot.Info, hisobot.ProjectName);
         }
     }
 }

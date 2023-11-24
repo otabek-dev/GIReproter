@@ -49,7 +49,6 @@ namespace GIReporter.Commands
             await _botClient.SendTextMessageAsync(message.Chat.Id, result.Message, parseMode: ParseMode.Markdown);
             await _userService.SetUserStateAsync(message.From.Id, State.Any);
             await _userService.SetInProcessCommand(message.From.Id, null);
-
         }
     }
 }

@@ -22,7 +22,7 @@ namespace GIReporter.Commands
         }
 
         public string CommandName => "/start";
-        public string Description => "start or restart bot and update commands";
+        public string Description => "start or restart bot";
 
         public async Task Execute(Message message)
         {

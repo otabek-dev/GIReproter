@@ -22,13 +22,6 @@ public class ExceptionHandlingMiddleware
         {
             await _next(httpContext);
         }
-        catch (KeyNotFoundException ex)
-        {
-            await HandleExceptionAsync(httpContext,
-                ex,
-                HttpStatusCode.NotFound,
-                "It's impossible, but... Roberto NOT FOUND!!!");
-        }
         catch (Exception ex)
         {
             await HandleExceptionAsync(httpContext,
