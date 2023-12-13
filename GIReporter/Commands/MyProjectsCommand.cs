@@ -59,7 +59,7 @@ namespace GIReporter.Commands
             await _botClient.SendTextMessageAsync(
                        chatId: message.Chat.Id,
                        text: "Ваши проекты: \n\r" + projectStrings,
-                       parseMode: ParseMode.MarkdownV2);
+                       parseMode: ParseMode.Markdown);
         }
 
         public Task GetUpdate(Message message)
