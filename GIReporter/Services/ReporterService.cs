@@ -1,4 +1,6 @@
 ﻿using GIReporter.DB;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -32,7 +34,8 @@ namespace GIReporter.Services
                 {
                     try
                     {
-                        ChatMember chatMember = await _botClient.GetChatMemberAsync(chatId, 6441434094);
+                        var botId = await _botClient.GetMeAsync();
+                        ChatMember chatMember = await _botClient.GetChatMemberAsync(chatId, botId.Id);
 
                         if (chatMember.Status == ChatMemberStatus.Member 
                             || chatMember.Status == ChatMemberStatus.Administrator)
