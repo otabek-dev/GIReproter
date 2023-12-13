@@ -46,7 +46,7 @@ namespace GIReporter.Commands
                     var info = chat.Title ?? chat.FirstName ?? chat.Username;
                     var isChatMemberBot = await _botClient.GetChatMemberAsync(p.ChatId, botId);
                     await Console.Out.WriteLineAsync(isChatMemberBot.Status.ToString());
-                    projectStrings.AppendLine($"({info}) `{p.ChatId.ToString()}:{p.Name}`");
+                    projectStrings.AppendLine($"```({info}) {p.ChatId.ToString()}:{p.Name}```");
 
                     await Console.Out.WriteLineAsync(projectStrings);
                 }
@@ -59,7 +59,7 @@ namespace GIReporter.Commands
             await _botClient.SendTextMessageAsync(
                        chatId: message.Chat.Id,
                        text: "Ваши проекты: \n\r" + projectStrings,
-                       parseMode: ParseMode.MarkdownV2);
+                       parseMode: ParseMode.Markdown);
         }
 
         public Task GetUpdate(Message message)
