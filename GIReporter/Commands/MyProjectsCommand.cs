@@ -46,7 +46,9 @@ namespace GIReporter.Commands
                     var info = chat.Title ?? chat.FirstName ?? chat.Username;
                     var isChatMemberBot = await _botClient.GetChatMemberAsync(p.ChatId, botId);
                     await Console.Out.WriteLineAsync(isChatMemberBot.Status.ToString());
-                    projectStrings.AppendLine($"({info})` {p.ChatId}`:`{p.Name}`");
+                    projectStrings.AppendLine($"({info}) `{p.ChatId}`:`{p.Name}`");
+
+                    await Console.Out.WriteLineAsync(projectStrings);
                 }
                 catch (Exception e)
                 {
