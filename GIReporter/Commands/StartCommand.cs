@@ -2,7 +2,6 @@
 using GIReporter.Models;
 using GIReporter.Services;
 using GIReporter.States;
-using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
