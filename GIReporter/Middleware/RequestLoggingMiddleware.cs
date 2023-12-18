@@ -19,7 +19,6 @@ public class RequestLoggingMiddleware
         {
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
-
             var requestBodyStream = new MemoryStream();
             var originalRequestBody = context.Request.Body;
 
@@ -42,7 +41,8 @@ public class RequestLoggingMiddleware
                 Exception = "none",
                 RequestMethod = context.Request.Method,
                 RequestPath = context.Request.Path,
-                RequestBodyText = requestBodyText,
+                RequestBodyText = requestBodyText.ToString() ?? "",
+                IP = context.Connection.RemoteIpAddress?.ToString(),
                 StatusCode = context.Response.StatusCode,
                 Duration = $"{stopwatch.ElapsedMilliseconds} ms"
             });
@@ -60,6 +60,7 @@ public class RequestLoggingMiddleware
                 RequestMethod = context.Request.Method,
                 RequestPath = context.Request.Path,
                 RequestBodyText = "",
+                IP = context.Connection.RemoteIpAddress?.ToString(),
                 StatusCode = context.Response.StatusCode,
                 Duration = $"ms"
             });
@@ -68,7 +69,6 @@ public class RequestLoggingMiddleware
                     ex.Message,
                     HttpStatusCode.InternalServerError,
                     "Internal server error");
-
         }
     }
 
