@@ -15,8 +15,18 @@ public class RequestLoggingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        string remoteIpAddress = string.Empty;
         try
         {
+            if (context.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor))
+            {
+                remoteIpAddress = forwardedFor.FirstOrDefault();
+            }
+            else
+            {
+                remoteIpAddress = context.Connection.RemoteIpAddress?.ToString();
+            }
+
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
             var requestBodyStream = new MemoryStream();
@@ -38,11 +48,11 @@ public class RequestLoggingMiddleware
             LogRequestToFile(new
             {
                 Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                IpAddress = remoteIpAddress,
                 Exception = "none",
                 RequestMethod = context.Request.Method,
                 RequestPath = context.Request.Path,
                 RequestBodyText = requestBodyText.ToString() ?? "",
-                IP = context.Connection.RemoteIpAddress?.ToString(),
                 StatusCode = context.Response.StatusCode,
                 Duration = $"{stopwatch.ElapsedMilliseconds} ms"
             });
@@ -56,11 +66,11 @@ public class RequestLoggingMiddleware
             LogRequestToFile(new
             {
                 Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                IpAddress = remoteIpAddress,
                 Exception = $"Exception:\nMessage: {ex.Message}\nInnerException: {ex.InnerException}\nStackTrace: {ex.StackTrace}",
                 RequestMethod = context.Request.Method,
                 RequestPath = context.Request.Path,
                 RequestBodyText = "",
-                IP = context.Connection.RemoteIpAddress?.ToString(),
                 StatusCode = context.Response.StatusCode,
                 Duration = $"ms"
             });
