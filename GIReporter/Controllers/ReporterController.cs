@@ -17,22 +17,6 @@ namespace GIReporter.Controllers
             _hisobotService = hisobotService;
         }
 
-        [HttpGet]
-        public string Get()
-        {
-            string remoteIpAddress = string.Empty;
-            if (HttpContext.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor))
-            {
-                remoteIpAddress = forwardedFor.FirstOrDefault();
-            }
-            else
-            {
-                remoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-            }
-
-            return remoteIpAddress;
-        }
-
         [HttpPost]
         public async Task Post([FromBody] ReporterDTO hisobot)
         {
