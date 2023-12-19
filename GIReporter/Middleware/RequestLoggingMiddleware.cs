@@ -90,7 +90,7 @@ public class RequestLoggingMiddleware
 
     private void LogRequestToFile(object logMessage)
     {
-        var logFilePath = $"log-request{DateTime.Now:yyyyMMdd}.txt";
+        var logFilePath = @$"../reporter-logs/log-request{DateTime.Now:yyyyMMdd}.txt";
         var logEntry = JsonSerializer.Serialize(logMessage);
         logEntry = $"{logEntry}\n";
         File.AppendAllText(logFilePath, logEntry);

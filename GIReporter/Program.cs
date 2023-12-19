@@ -10,7 +10,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)  
     .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.File(new CompactJsonFormatter(), "log-app.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File(new CompactJsonFormatter(), @"../reporter-logs/log-app.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 builder.Services
