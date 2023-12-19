@@ -75,6 +75,7 @@ public class UpdateHandlers
         if (!await _userService.IsAdminAsync(message.From.Id))
             return;
 
+        await _botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
         await _commandInvoker.CommandExexute(message);
     }
 
