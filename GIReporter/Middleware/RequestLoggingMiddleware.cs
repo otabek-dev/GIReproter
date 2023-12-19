@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using GIReporter.DTOs;
+using Serilog;
 using System.Net;
 using System.Text.Json;
 
@@ -19,13 +20,9 @@ public class RequestLoggingMiddleware
         try
         {
             if (context.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor))
-            {
                 remoteIpAddress = forwardedFor.FirstOrDefault();
-            }
             else
-            {
                 remoteIpAddress = context.Connection.RemoteIpAddress?.ToString();
-            }
 
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
@@ -45,15 +42,13 @@ public class RequestLoggingMiddleware
 
             stopwatch.Stop();
             Log.Information($"Request completed in {stopwatch.ElapsedMilliseconds} ms");
-            LogRequestToFile(new
+            LogRequestToFile(new LogDTO()
             {
-                Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
                 IpAddress = remoteIpAddress,
-                Exception = "none",
                 RequestMethod = context.Request.Method,
                 RequestPath = context.Request.Path,
                 RequestBodyText = requestBodyText.ToString() ?? "",
-                StatusCode = context.Response.StatusCode,
+                StatusCode = context.Response.StatusCode.ToString(),
                 Duration = $"{stopwatch.ElapsedMilliseconds} ms"
             });
 
@@ -63,22 +58,16 @@ public class RequestLoggingMiddleware
         {
             Log.Error(ex, $"Error processing request: {ex.Message}");
 
-            LogRequestToFile(new
+            LogRequestToFile(new LogDTO()
             {
-                Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"),
                 IpAddress = remoteIpAddress,
                 Exception = $"Exception:\nMessage: {ex.Message}\nInnerException: {ex.InnerException}\nStackTrace: {ex.StackTrace}",
                 RequestMethod = context.Request.Method,
                 RequestPath = context.Request.Path,
-                RequestBodyText = "",
-                StatusCode = context.Response.StatusCode,
-                Duration = $"ms"
+                StatusCode = context.Response.StatusCode.ToString(),
             });
 
-            await HandleExceptionAsync(context,
-                    ex.Message,
-                    HttpStatusCode.InternalServerError,
-                    "Internal server error");
+            await HandleExceptionAsync(context, ex.Message, HttpStatusCode.InternalServerError, "Internal server error");
         }
     }
 
@@ -89,10 +78,11 @@ public class RequestLoggingMiddleware
         response.ContentType = "application/json";
         response.StatusCode = (int)httpStatusCode;
 
-        var errorDto = new
+        ErrorDTO errorDto = new()
         {
-            Message = message,
-            StatusCode = (int)httpStatusCode
+            ExceptionTittle = exMsg,
+            StatusCode = (int)httpStatusCode,
+            Message = message
         };
 
         await response.WriteAsJsonAsync(errorDto);
