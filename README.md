@@ -73,9 +73,6 @@ sudo systemctl enable PROJECT_NAME.service <br/>
 sudo systemctl start PROJECT_NAME.service <br/>
 sudo systemctl restart PROJECT_NAME.service
 
-<<<<<<< HEAD
-=======
-
 -> PostgreSQL 15
 -> dotnet sdk 7
 -> aspnet core runtime 7
@@ -88,5 +85,3 @@ export PATH="$PATH:/root/.dotnet/tools"
 EOF
 ```
 source ~/.bash_profile
-
->>>>>>> 8ceb436fd3edde07c25a6ca6d248822400fcdb8d
