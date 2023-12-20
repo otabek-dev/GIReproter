@@ -8,6 +8,7 @@ build:
   - dev
   stage: build
   script:
+    - sudo cp /home/otabek/gireporterappsettings/* ./GIReporter/ -r
     - dotnet build
     - dotnet ef database update --project GIReporter
 

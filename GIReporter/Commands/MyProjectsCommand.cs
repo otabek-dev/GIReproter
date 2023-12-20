@@ -2,6 +2,7 @@
 using GIReporter.Models;
 using GIReporter.Services;
 using GIReporter.States;
+using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -30,18 +31,32 @@ namespace GIReporter.Commands
 
             if (!projects.Any())
             {
-                await _botClient.SendTextMessageAsync(
-                        chatId: message.Chat.Id,
-                        text: "Проектов не найдено!");
+                await _botClient.SendTextMessageAsync(message.Chat.Id, text: "Проектов не найдено!");
                 return;
             }
 
-            var projectStrings = projects.Select(p => $"`{p.ChatId}:{p.Name}`");
-            string projectsAsString = string.Join(Environment.NewLine, projectStrings);
+            var projectStrings = new StringBuilder();
+            var botId = _botClient.GetMeAsync().Result.Id;
+
+            foreach (var p in projects)
+            {
+                try
+                {
+                    var chat = await _botClient.GetChatAsync(p.ChatId!);
+                    var info = chat.Title ?? chat.FirstName ?? chat.Username;
+                    var isChatMemberBot = await _botClient.GetChatMemberAsync(p.ChatId, botId);
+                    await Console.Out.WriteLineAsync(isChatMemberBot.Status.ToString());
+                    projectStrings.AppendLine($"``` {p.ChatId.ToString()} : {p.Name} \n ({info}) ```");
+                }
+                catch (Exception e)
+                {
+                    _projectService.DeleteProject(p.ChatId!);
+                }
+            }
 
             await _botClient.SendTextMessageAsync(
                        chatId: message.Chat.Id,
-                       text: "Ваши проекты:\n\r" + projectsAsString,
+                       text: "*Ваши проекты:* \n\r" + projectStrings,
                        parseMode: ParseMode.Markdown);
         }
 

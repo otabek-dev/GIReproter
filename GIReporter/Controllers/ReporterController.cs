@@ -1,6 +1,8 @@
 ﻿using GIReporter.DTOs;
 using GIReporter.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace GIReporter.Controllers
 {
